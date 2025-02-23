@@ -1,0 +1,22 @@
+-cp src
+-lib hlsdl
+-lib heaps
+-lib haxeui-core
+-lib haxeui-heaps
+-lib pasta-physic
+-lib thinglib
+-lib uuid
+-lib logger
+-hl out/hl/thingmaker.hl
+-D hot-reload
+-D no-deprecation-warnings
+-D message-reporting=pretty
+-D windowTitle=thingmaker
+-D windowSize=1920x1080
+-D hl-ver=1.15.0 
+-D haxeui_expose_all
+-D hl-profile
+#-D haxeui_no_filters
+#-D dump=pretty 
+-main Main
+-debug

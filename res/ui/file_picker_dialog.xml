@@ -1,0 +1,4 @@
+<dialog width="300" height="200">
+    <textfield width="100%" id="txt_proj_path"/>
+    <button id="btn_open" text="Okay" disabled="${txt_proj_path.text==''}"/>
+</dialog>

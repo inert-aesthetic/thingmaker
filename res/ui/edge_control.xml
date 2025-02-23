@@ -1,0 +1,8 @@
+<hbox horizontalAlign="center">
+    <textfield id="dummy" visible="false"/>
+    <label verticalAlign="center" text="a"/>
+    <button id="a_btn"/>
+    <button id="swap_btn" icon="${Icon.swap_horizontal_16}"/>
+    <label verticalAlign="center" text="b"/>
+    <button id="b_btn"/>
+</hbox>

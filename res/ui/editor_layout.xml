@@ -1,0 +1,66 @@
+<vbox width="100%" height="100%">
+    <style>
+        .badge {
+            background-color: $solid-background-color-alt;
+            border-radius:3px;
+            padding: 1px 3px;
+            spacing:0;
+        }
+    </style>
+    <menubar id="topmenu" width="100%">
+        <menu text="File">
+            <menuitem id="save_construct_btn" text="Save Construct" />    
+            <menuitem id="change_construct_btn" text="Change Construct" />    
+            <menuseparator />  
+            <menuitem id="open_project_btn" text="Change Project" />
+        </menu>
+        <menu text="Project">
+            <menuitem id="manage_property_defs_btn" text="Property Definitions" />
+            <menuitem id="project_settings_btn" text="Project Settings" />
+        </menu>
+        <menu text="Help">
+            <menuitem id="help_about_btn" text="About"/>
+        </menu>
+        <image resource="${Icon.search_20}" id="addclip" verticalAlign="center" style="filter: invert(1) tint($nord-light1, 1)"/>
+        <number-stepper id="zoom_stp" pos="1" step="0.1" min="0" />
+        <button id="ruler_btn" text="Toggle Grid" height="100%"/>
+        <number-stepper id="grid_stp" pos="10" step="0.1" min="0.1" />
+        <label text="Snap to Grid" />
+        <switch id="grid_snap_chk" />
+        <label id="menubar_txt" styleName="badge"/>
+        <group id="mode_select" layout="horizontal">
+            <optionbox id="mode_select_rad" text="Select" selected="true"/>
+            <optionbox id="mode_add_rad" text="Add" />
+            <optionbox id="mode_delete_rad" text="Delete"/>
+            <optionbox id="mode_weld_rad" text="Weld"/>
+            <optionbox id="mode_edge_rad" text="Edge"/>
+            <optionbox id="mode_region_rad" text="Region"/>
+            <optionbox id="mode_path_rad" text="Path"/>
+            <optionbox id="mode_tether_rad" text="Tether"/>
+
+        </group>
+    </menubar>
+    <splitter width="100%" height="100%">
+        <splitter id="leftpanel" direction="vertical" width="25%" height="100%" style="background-color:$nord-dark1;">
+            <UIEntityHierarchy id="component_explorer" width="100%" height="100%"/>
+            <UIPropertyExplorer id="component_prop_explorer"/>
+        </splitter>
+        <vbox width="75%" height="100%">
+            <splitter id="centerpanel" direction="vertical" width="100%" height="100%" style="background-color:$nord-dark1;">
+                <box id="mainview_box" width="100%" height="80%">
+                    <UIConstructEditorWrapper id="mainview_wrapper" width="100%" height="100%"/>
+                </box>
+                <tabview width="100%" height="20%">
+                    <box text="Prefabs" id="assetpanel_box" width="100%" height="100%">
+                        <UIAssetExplorer/>
+                    </box>
+                    <UITimelineTab />
+                </tabview>
+            </splitter>
+            <hbox width="100%">                
+                <window-list id="windowList" height="30"/>
+            </hbox>
+        </vbox>
+    </splitter>
+    
+</vbox>

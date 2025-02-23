@@ -1,0 +1,23 @@
+<window title="Child Component Manager" width="580" height="500">
+    <hbox width="100%">
+        <textfield width="100%" id="newchilddef_txt" placeholder="Child Component Def Name"/>  
+        <button id="newchilddef_btn" text="Create Definition" disabled="${newchilddef_txt.text==''}"/>
+    </hbox>
+    <hbox id="add_prop_box" width="100%">
+        <dropdown text="Select Property" id="prop_type_drp" width="50%" />
+        <button id="add_prop_btn" text="Add" verticalAlign="center"/>
+    </hbox>
+    <tree-view id="defs_tree" width="100%" height="100%" styleName="full-width">
+        <item-renderer layout="horizontal" width="100%">
+            <label id="text" verticalAlign="center"/>
+            <button id="remove_prop_btn" text="Remove"/>
+        </item-renderer>
+        <item-renderer layout="horizontal" id="expandable" width="100%">
+            <label id="text" verticalAlign="center"/>
+            <checkbox id="node_chk" text="Node" />
+            <checkbox id="edge_chk" text="Edge" />
+            <checkbox id="group_chk" text="Group" />
+            <checkbox id="region_chk" text="Region" />
+        </item-renderer>
+    </tree-view>   
+</window>

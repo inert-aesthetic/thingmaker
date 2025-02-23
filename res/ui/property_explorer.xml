@@ -1,0 +1,23 @@
+<vbox width="100%" height="100%">
+    <style>
+        #property_grid .property-group-item-label-container {
+            width: 25%;
+        }
+        #property_grid .property-group-item-editor-container {
+            width: 75%;
+        }
+        #property_grid .image{
+            filter: invert(1) tint($nord-light1, 1);
+        }
+    </style>
+    <hbox>
+        <label text="Selected:" />
+        <label id="count" />
+    </hbox>
+    <hbox width="100%" disabled="${count.text=='0'}">
+        <dropdown id="component_type_drp" width="100%"/>
+        <button text="Add" id="add_component_btn" width="50"/>
+    </hbox>
+    <property-grid id="property_grid" width="100%" height="100%">
+    </property-grid>
+</vbox>

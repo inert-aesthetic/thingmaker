@@ -1,0 +1,13 @@
+<window title="Multi Editor" width="580" height="500">
+    <style>
+        #checks_grd .property-group-header{
+            display:none;
+        }
+    </style>
+    <label id="objects_selected_txt" />
+    <label style="font:italic" text="Note: Changes are applied immediately."/>
+    <label id="error_txt" hidden="true"/>
+    <property-grid id="checks_grd" width="100%" height="100%">
+
+    </property-grid>
+</window>

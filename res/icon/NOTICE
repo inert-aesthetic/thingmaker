@@ -1,0 +1,8 @@
+Icons used from Blueprint under Apache2.0 license.
+https://github.com/palantir/blueprint
+
+Modifications made to Blueprint:
+- Moved icons directory to folder root
+- Removed everything except icons directory
+
+Icons themselves are not changed.

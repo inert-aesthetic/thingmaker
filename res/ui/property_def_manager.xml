@@ -1,0 +1,31 @@
+<window title="Component Manager" width="680" height="500">
+    <hbox width="100%">
+        <textfield width="100%" id="newlist_txt" placeholder="Component Name"/>  
+        <button id="newlist_btn" text="Create Component" disabled="${newlist_txt.text==''}"/>
+    </hbox>    
+    <tree-view width="100%" height="100%" id="prop_def_tree" styleName="full-width">
+        <item-renderer layout="horizontal" width="100%">
+            <label id="text" width="100" verticalAlign="center"/>
+            <hbox style="background-color: $solid-background-color-alt;border-radius:3px;padding: 1px 3px" verticalAlign="center">
+                <label id="type_txt" style="color:#888888;font-size: 12px;" width="40" horizontalAlign="center"/>
+            </hbox>
+            <button id="deleteprop_btn" text="Delete" height="20"/>
+            <button id="editprop_btn" text="Edit" height="20"/>
+            <!-- <label text="Default: " verticalAlign="center"/>
+            <checkbox id="default_node_chk" text="Node" verticalAlign="center" />
+            <checkbox id="default_construct_chk" text="Construct" verticalAlign="center" />
+            <checkbox id="default_group_chk" text="Group" verticalAlign="center" />
+            <checkbox id="default_region_chk" text="Region" verticalAlign="center" /> -->
+        </item-renderer>
+        <item-renderer id="expandable" layout="horizontal" width="100%">
+            <hbox width="100%">        
+                <image resource="res/icons/line.png" verticalAlign="center" />
+                <label id="text" verticalAlign="center" width="20%"/>
+                <checkbox id="user_selectable_chk" text="Selectable" verticalAlign="center" />
+                <button text="Dependencies" id="dependencies_btn" height="20"/>
+                <button text="Add Prop" id="addprop_btn" height="20"/>
+            </hbox>
+        </item-renderer>
+    </tree-view>
+    
+</window>

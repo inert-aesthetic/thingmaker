@@ -1,0 +1,16 @@
+
+out/hl/
+
+global.prefs.json
+
+.vscode/settings.json
+
+test_proj/
+
+res/.tmp/
+
+*.dump
+
+dump/
+
+.vscode/

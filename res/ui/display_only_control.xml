@@ -1,0 +1,4 @@
+<hbox horizontalAlign="center">
+    <textfield id="dummy" visible="false"/>
+    <label verticalAlign="center" text="${display}"/>
+</hbox>

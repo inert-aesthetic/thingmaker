@@ -1,0 +1,6 @@
+<dialog width="300" id="startup" title="Startup">
+    <hbox width="100%">
+        <button id="open_existing" text="Open Project"/>
+        <button id="create_new" text="New Project"/>
+    </hbox>
+</dialog>
