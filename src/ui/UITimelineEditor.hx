@@ -530,9 +530,15 @@ class UITimelineFrameMarker extends VBox{
 
 @:xml('
 <hbox width="100%" height="30" style="background-color: $nord-dark2;border-bottom:1px solid $nord-dark1;">
-    <button id="remove_track_btn" text="x"/>
-    <spacer width="10px"/>
-    <label text="${track_name}" verticalAlign="center" />
+    <button width="25px" height="25px" verticalAlign="center" id="remove_track_btn" icon="${Icon.trash_16}" tooltip="Remove track and all keyframes"/>
+    <spacer width="5px"/>
+    <label text="${track_name}" verticalAlign="center" width="80px" />
+    <dropdown id="offset_drp" width="80px">
+        <data>
+            <item text="Absolute" value="${TimelineOffsetMethod.ABSOLUTE}"/>
+            <item text="Relative" value="${TimelineOffsetMethod.RELATIVE}"/>
+        </data>
+    </dropdown>
 </hbox>
 ')
 class UITimelineTrackLabel extends HBox{
@@ -544,6 +550,15 @@ class UITimelineTrackLabel extends HBox{
         this.timeline = timeline;
         this.track=track;
         super();
+        offset_drp.text = switch track.offset {
+            case ABSOLUTE: "Absolute";
+            case RELATIVE: "Relative";
+        };
+    }
+
+    @:bind(offset_drp, UIEvent.CHANGE)
+    function onOffsetDrpChanged(e){
+        track.offset = offset_drp.selectedItem.value;
     }
 
     @:bind(remove_track_btn, MouseEvent.CLICK)
