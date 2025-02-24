@@ -47,9 +47,9 @@ class Main extends App{
 
     // #region startup_sequence
     override function init(){
-        Comms.log.verbose.enabled=true;
-        Util.log.verbose.enabled=true;
-        Util.log.info.enabled=true;
+        Comms.log.verbose.enabled=false;
+        Util.log.verbose.enabled=false;
+        Util.log.info.enabled=false;
         hxd.Res.initLocal();
         Toolkit.init({root:s2d});
         Toolkit.theme = 'dark';
