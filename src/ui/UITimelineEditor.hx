@@ -208,12 +208,15 @@ class UITimelineEditor extends VBox{
         var props:Array<PropertyDef> = [];
         for(c in target.components){
             for(d in c.definitions){
-                if(current_state.getTrackFor(d)==null){
+                if(d.timeline_controllable && current_state.getTrackFor(d)==null){
                     props.push(d);
                 }
             }
         }
         //TODO sort props here
+        //Just alphabetical sort is bad; it will be confusing. 
+        //should add component name to start and then sort.
+        // props.sort((a, b)->a.name>b.name?1:a.name<b.name?-1:0);
         var ds = new ArrayDataSource<{text:String, value:PropertyDef}>();
         for(p in props){
             ds.add({text:p.name, value:p});
