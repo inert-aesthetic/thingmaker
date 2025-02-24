@@ -95,9 +95,7 @@ using thinglib.component.util.EntityTools;
     <grid id="mainGrid" width="100%" height="100%" style="spacing: 0px">
         <spacer width="200"/>
         <scrollview id="headerScroller" width="100%" styleNames="no-padding no-border" allowFocus="false" horizontalScrollPolicy="never">
-            <hbox>
-            <hbox id="frameHolder" height="30" style="background-color: $nord-dark3 ;spacing:15px;padding-left:15px;">
-            </hbox>
+            <hbox id="frameHolder" height="30" style="background-color: $nord-dark3; spacing:15px;padding-left:15px;">
             </hbox>
         </scrollview>
         <vbox width="200" height="100%" style="spacing:0">
@@ -128,7 +126,7 @@ class UITimelineEditor extends VBox{
     var frame_holder_mouse_down:Bool = false;
     var is_ready:Bool = false;
 
-    var zoom_factor:TimelineZoom = ONE;
+    public var zoom_factor:Float = 1;
     
     public var timeline:Timeline;
 
@@ -264,10 +262,18 @@ class UITimelineEditor extends VBox{
 
     @:bind(zoom_drp, UIEvent.CHANGE)
     function onZoomDropChange(e){
-        var target = zoom_drp.selectedItem.value;
-        if(zoom_factor!=target){
-            zoom_factor=target;
-            //TODO rebuild everything here
+        var target:TimelineZoom = zoom_drp.selectedItem.value;
+        var new_value:Float = switch target {
+            case ONE: 1.0;
+            case TEN: 0.1;
+            case HUNDRED: 0.01;
+        }
+        if(zoom_factor!=new_value){
+            zoom_factor=new_value;
+            rebuildFramesHeader();
+            for(track in tracks){
+                track.track.rebuildPositions();
+            }
         }
     }
 
@@ -368,7 +374,7 @@ class UITimelineEditor extends VBox{
     @:bind(frameHolder, MouseEvent.MOUSE_DOWN)
     function onFrameHolderMouseClick(e:MouseEvent){
         frame_holder_mouse_down = true;
-        var target_frame = Math.round((e.localX-5)/20);
+        var target_frame = Math.round((e.localX-5)/20/zoom_factor);
         current_frame=target_frame;
     }
 
@@ -381,7 +387,7 @@ class UITimelineEditor extends VBox{
     @:bind(frameHolder, MouseEvent.MOUSE_MOVE)
     function onFrameHolderMouseDrag(e:MouseEvent){
         if(!frame_holder_mouse_down) return;
-        var target_frame = Math.round((e.localX-5)/20);
+        var target_frame = Math.round((e.localX-5)/20/zoom_factor);
         if(target_frame==current_frame) return;
         current_frame=target_frame;
     }
@@ -458,15 +464,22 @@ class UITimelineEditor extends VBox{
         if(to==frames){ return frames; }
         frames=to;
         current_state.frames=to;
-        frameHolder.removeAllComponents();
-        frameHolder.width=frames*20;
-        for(i in 0...to){
-            frameHolder.addComponent(new UITimelineFrameMarker(i));
+        rebuildFramesHeader();
+        for(track in tracks){
+            track.track.rebuildPositions();
         }
         if(to<current_frame){
             current_frame=to;
         }
         return frames;
+    }
+
+    function rebuildFramesHeader(){
+        frameHolder.removeAllComponents();
+        frameHolder.width=(frames+1/zoom_factor)*20*zoom_factor;
+        for(i in 0...(Math.ceil(frames*zoom_factor))){
+            frameHolder.addComponent(new UITimelineFrameMarker(Math.round(i/zoom_factor), Math.round(5/zoom_factor)));
+        }
     }
 
     public function keyframeSelected(keyframe:UITimelineKeyframe, track:UITimelineTrack){
@@ -496,7 +509,7 @@ class UITimelineEditor extends VBox{
         if(to<0) to = 0;
         if(to>=frames) to = frames-1;
         current_frame = to;
-        playhead.left = 18+current_frame*20;
+        playhead.left = 18+current_frame*20*zoom_factor;
         target.frame = current_frame;
         Comms.send(PROPERTY_VALUE_CHANGED(CoreComponentTimelineControl.frame_def, [target]), this);
         for(t in target.current_state.tracks){
@@ -536,13 +549,13 @@ class UITimelineFrameMarker extends VBox{
     var number:Int;
     var frame_label:String="";
     var rule_height:Int=10;
-    public function new(num:Int=0){
+    public function new(num:Int=0, number_per:Int=5){
         this.number=num;
-        if(number%5==0){
+        if(number%number_per==0){
             frame_label=Std.string(number);
         }        
         super();
-        if(number%5==0){
+        if(number%number_per==0){
             marker_rule.height=15;
         }
         else{
@@ -600,18 +613,24 @@ class UITimelineTrack extends HBox{
     public var mouse_x:Float=0;
     public var keyframes:Map<Int, UITimelineKeyframe> = [];
     var property:PropertyDef;
-    var timeline:UITimelineEditor;
+    public var timeline:UITimelineEditor;
     public var track:TimelineTrack;
     public function new(timeline:UITimelineEditor, track:TimelineTrack){
         this.timeline = timeline;
         this.track=track;
         super();
-        width=timeline.frames*20;
+        width=timeline.frames*20*timeline.zoom_factor;
         this.property = timeline.target.reference.getRoot().getThing(PROPERTYDEF, track.target);
         this.onDblClick = onDoubleClick;
         this.onRightClick = _->trace("rght");
         for(k in track.getAllKeyframes()){
             addKeyframeUI(k.frame, k.keyframe);
+        }
+    }
+    public function rebuildPositions(){
+        width=(timeline.frames+1/timeline.zoom_factor)*20*timeline.zoom_factor;
+        for(i=>keyframe in keyframes){
+            keyframe.updateFramePosition();
         }
     }
 
@@ -626,7 +645,7 @@ class UITimelineTrack extends HBox{
     }
 
     function onDoubleClick(e:MouseEvent){
-        var target_frame = Math.round((e.localX-5)/20);
+        var target_frame = Math.round(((e.localX-5)/20)/timeline.zoom_factor);
         if(!keyframes.exists(target_frame)){
             addKeyframe(target_frame);
         }
@@ -747,7 +766,7 @@ class UITimelineKeyframe extends Box{
     }
 
     function snapToFrame(){
-        set_frame(Math.round((this.left-4)/20));
+        set_frame(Math.round((this.left-4)/20/track.timeline.zoom_factor));
     }
 
     function set_is_selected(to){
@@ -763,8 +782,12 @@ class UITimelineKeyframe extends Box{
         if(frame==-1||track.tryMoveKeyframe(this, frame, to)){
             frame = to;
         }
-        this.left=20*frame+4;
+        updateFramePosition();
         return frame;
+    }
+
+    public function updateFramePosition(){
+        this.left=20*(frame*track.timeline.zoom_factor)+4;
     }
 
     public function removeSelf(){
