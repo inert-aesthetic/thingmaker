@@ -56,7 +56,7 @@ using thinglib.component.util.EntityTools;
         <dropdown id="states_drp" width="100px">
         </dropdown>
         <rule direction="vertical" height="100%" />
-        <label text="Frames:"verticalAlign="center"/>
+        <label text="Frames:"verticalAlign="center" width="90px"/>
         <number-stepper id="frames_stp" pos="30" step="1" min="1" />
         <rule direction="vertical" height="100%" />
         <button id="to_start_btn" icon="${Icon.fast_backward_16}" styleName="timeline-button"/>
@@ -68,7 +68,7 @@ using thinglib.component.util.EntityTools;
         <dropdown id="add_track_drp" width="100px"/>
         <button id="add_track_btn" text="Add Track"/>
         <rule direction="vertical" height="100%" />
-        <label text="Interpolation" verticalAlign="center"/>
+        <label text="Interpolation" verticalAlign="center" width="110px"/>
         <dropdown id="interpolation_drp" width="100px"/>
         <rule direction="vertical" height="100%" />
         <label text="On finish" verticalAlign="center"/>
@@ -82,6 +82,15 @@ using thinglib.component.util.EntityTools;
         </dropdown>
         <number-stepper id="on_end_frame_stp" pos="0" step="1" min="0"/>
         <dropdown id="on_end_state_drp" width="100px"/>
+        <rule direction="vertical" height="100%"/>
+        <image resource="${Icon.search_20}" verticalAlign="center" style="filter: invert(1) tint($nord-light1, 1)"/>
+        <dropdown id="zoom_drp">
+            <data>
+                <item text="1.00x" value="${TimelineZoom.ONE}"/>
+                <item text="0.10x" value="${TimelineZoom.TEN}"/>
+                <item text="0.01x" value="${TimelineZoom.HUNDRED}"/>
+            </data>
+        </dropdown>
     </hbox>
     <grid id="mainGrid" width="100%" height="100%" style="spacing: 0px">
         <spacer width="200"/>
@@ -118,6 +127,8 @@ class UITimelineEditor extends VBox{
     var is_playing:Bool=false;
     var frame_holder_mouse_down:Bool = false;
     var is_ready:Bool = false;
+
+    var zoom_factor:TimelineZoom = ONE;
     
     public var timeline:Timeline;
 
@@ -248,6 +259,15 @@ class UITimelineEditor extends VBox{
                 addTrack(new_track);
             }
             updateAvailableProps();
+        }
+    }
+
+    @:bind(zoom_drp, UIEvent.CHANGE)
+    function onZoomDropChange(e){
+        var target = zoom_drp.selectedItem.value;
+        if(zoom_factor!=target){
+            zoom_factor=target;
+            //TODO rebuild everything here
         }
     }
 
@@ -772,4 +792,10 @@ class UITimelineKeyframeMenu extends Menu{
                 keyframe.removeSelf();
         }
     }
+}
+
+enum TimelineZoom{
+    ONE;
+    TEN;
+    HUNDRED;
 }
