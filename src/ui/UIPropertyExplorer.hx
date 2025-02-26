@@ -82,6 +82,7 @@ class UIPropertyExplorer extends VBox{
 
     override function onDestroy(){
         Comms.cleanupSubscriber(this);
+        super.onDestroy();
     }
 
     public function attachObject(object:Entity, skip_population:Bool=false){   
@@ -478,7 +479,7 @@ class PropertyLabelControl extends HBox{
                         updateButtons();
                     }
             }
-        });
+        }, this);
     }
 
     function updateButtons(){

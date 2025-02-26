@@ -63,7 +63,7 @@ class UIEntityHierarchy extends VBox{
                     menu.top = mouse_y;
                     Screen.instance.addComponent(menu);
             }
-        });
+        }, this);
         Comms.subscribe(REQUEST_CUT_ENTITY(null), commsHandler, this);
         Comms.subscribe(REQUEST_PASTE_ENTITY(null), commsHandler, this);
         // registerEvent(ItemEvent.COMPONENT_CLICK_EVENT, (event:ItemEvent)->{
@@ -77,6 +77,7 @@ class UIEntityHierarchy extends VBox{
 
     override function onDestroy(){
         Comms.cleanupSubscriber(this);
+        super.onDestroy();
     }
 
     @:bind(tree, UIEvent.CHANGE)

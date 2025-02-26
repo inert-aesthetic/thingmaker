@@ -55,7 +55,7 @@ class Main extends App{
         Toolkit.theme = 'dark';
         this.engine.backgroundColor = Nord.dark1;
         //Startup sequence
-        Comms.subscribe(PROJECT_CHANGED(null), onProjectChanged);
+        Comms.subscribe(PROJECT_CHANGED(null), onProjectChanged, "Main");
 
         //hook up handlers
         Comms.subscribe(REQUEST_SAVE_THING(null), (c, p)->{
@@ -70,9 +70,9 @@ class Main extends App{
                     }
                 default:
             }
-        });
-        Comms.subscribe(REQUEST_CHANGE_CONSTRUCT, (c, p)->doChangeConstruct());
-        Comms.subscribe(REQUEST_CHANGE_PROJECT, (c, p)->doChangeProject());
+        }, "Main");
+        Comms.subscribe(REQUEST_CHANGE_CONSTRUCT, (c, p)->doChangeConstruct(), "Main");
+        Comms.subscribe(REQUEST_CHANGE_PROJECT, (c, p)->doChangeProject(), "Main");
         Comms.subscribe(REQUEST_SAVE_CONSTRUCT(null), (e, p)->{
             switch(e){
                 case REQUEST_SAVE_CONSTRUCT(c):
@@ -88,21 +88,21 @@ class Main extends App{
                     }
                 default:
             }
-        });
+        }, "Main");
         Comms.subscribe(REQUEST_ENUMERATE_COMPONENTS, (c, p)->{
             if(project!=null){
                 project.enumerateComponents();
                 Comms.send(COMPONENTS_CHANGED(project), this);
             }
-        });
+        }, "Main");
         Comms.subscribe(REQUEST_ENUMERATE_CONSTRUCTS, (c, p)->{
             if(project!=null){
                 project.enumerateConstructs();
                 Comms.send(AVAILABLE_CONSTRUCTS_CHANGED(project.availableConstructs, project), this);
             }
-        });
+        }, "Main");
 
-        Comms.subscribe(REQUEST_STARTUP_CONSTRUCT, (c, p)->doStartupOpenConstruct());
+        Comms.subscribe(REQUEST_STARTUP_CONSTRUCT, (c, p)->doStartupOpenConstruct(), "Main");
         initializeEditor();
         doStartupOpenProject();
     }

@@ -52,6 +52,7 @@ class UIPropertyDefManager extends Window{
 
     override function onDestroy(){
         Comms.cleanupSubscriber(this);
+        super.onDestroy();
     }
 
     function populate(components:Array<Component>){

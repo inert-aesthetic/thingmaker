@@ -197,17 +197,18 @@ class UIConstructEditor extends Canvas{
 				case REQUEST_ADD_ENTITY(parent):
 					addEntity(parent);
 			}
-		});
+		}, this);
 		Comms.subscribe(REQUEST_ENTITIES_LIST, (c, p)->{
 			Comms.send(PROVIDE_ENTITIES_LIST(getChildrenRecursive(construct, true), p), this);
 		}, this);
-		Comms.subscribe(ENTITY_ADDED(null), (_,_)->recalculateEntities());
-		Comms.subscribe(ENTITY_REMOVED(null), (_,_)->recalculateEntities());
-		Comms.subscribe(ENTITY_VISIBILITY_CHANGED(null), (_,_)->recalculateEntities());
+		Comms.subscribe(ENTITY_ADDED(null), (_,_)->recalculateEntities(), this);
+		Comms.subscribe(ENTITY_REMOVED(null), (_,_)->recalculateEntities(), this);
+		Comms.subscribe(ENTITY_VISIBILITY_CHANGED(null), (_,_)->recalculateEntities(), this);
     }
 
 	override function onDestroy(){
 		Comms.cleanupSubscriber(this);
+		super.onDestroy();
 	}
 
 	function set_show_grid(v):Bool{
@@ -884,7 +885,7 @@ class UIConstructEditor extends Canvas{
 	}
 
 	public function populateExplorer(){		
-		Comms.send(REQUEST_SELECT_ENTITIES(selected));
+		Comms.send(REQUEST_SELECT_ENTITIES(selected), this);
 
 		
 	}

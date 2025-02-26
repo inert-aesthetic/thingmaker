@@ -42,7 +42,7 @@ class Comms{
     static var debounce_queue:Map<String, Timer> = new Map();
     static var queue:Array<{call:CommType, caller:Dynamic}> = [];
     static var in_call:Bool = false;
-    public static function subscribe(comm_type:CommType, callback:CommHandler, ?subscriber:Dynamic){
+    public static function subscribe(comm_type:CommType, callback:CommHandler, subscriber:Dynamic){
         var typename = comm_type.getName();
         if(subscriptions.exists(typename)){
             subscriptions.get(typename).push({subscriber:subscriber, callback:callback});

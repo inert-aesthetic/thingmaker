@@ -189,7 +189,7 @@ class UITimelineEditor extends VBox{
                             }
                     }
             }
-        });
+        }, this);
         is_ready=true;
     }
 

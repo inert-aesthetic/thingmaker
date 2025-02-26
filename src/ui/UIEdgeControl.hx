@@ -54,11 +54,12 @@ class UIEdgeControl extends HBox{
                         setup();
                     }
             }
-        });
+        }, this);
     }
 
     override function onDestroy(){
         Comms.cleanupSubscriber(this);
+        super.onDestroy();
     }
 
     function setup(){
