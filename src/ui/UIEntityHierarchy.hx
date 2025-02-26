@@ -257,10 +257,14 @@ class UIEntityHierarchy extends VBox{
                 onClick:(_)->{
                     project.toggleHidden(obj);
                     Comms.send(ENTITY_VISIBILITY_CHANGED([obj]), this);
+                    Comms.send(REQUEST_SAVE_EDITOR_VIEW, this);
                 }
             },
             lock_btn:{selected:project.isLocked(obj), 
-                onClick:(_)->project.toggleLocked(obj)
+                onClick:(_)->{
+                    project.toggleLocked(obj);
+                    Comms.send(REQUEST_SAVE_EDITOR_VIEW, this);
+                }
             },
             up_btn:{
                 onClick:(_)->{

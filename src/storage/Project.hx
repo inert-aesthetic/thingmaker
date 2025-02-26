@@ -98,7 +98,7 @@ class Project{
     }
 
     public function isHidden(entity:Entity):Bool{
-        return hiddenEntities.exists(entity.guid)&&hiddenEntities.get(entity.guid);
+        return hiddenEntities.exists(entity.guid);
     }
 
     public function setHidden(entity:Entity, to:Bool){
@@ -111,7 +111,7 @@ class Project{
     }
 
     public function isLocked(entity:Entity):Bool{
-        return lockedEntities.exists(entity.guid)&&lockedEntities.get(entity.guid);
+        return lockedEntities.exists(entity.guid);
     }
 
     public function setLocked(entity:Entity, to:Bool){
