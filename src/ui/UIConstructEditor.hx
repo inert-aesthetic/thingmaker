@@ -84,7 +84,7 @@ class UIConstructEditor extends Canvas{
 
 	public var show_grid(default, set):Bool = true;
 	public var snap_grid(default, set):Bool = true;
-	public var grid_size(default, set):Float = 10;
+	public var grid_size(default, set):Float = 50;
 
 	var history:Array<HistoryStep> = [];
 	var future:Array<HistoryStep> = [];
@@ -1015,7 +1015,7 @@ class UIConstructEditor extends Canvas{
 
 		// draw!
 		if(show_grid){
-			g.strokeStyle(Nord.dark4, 1, 1);
+			g.strokeStyle(Nord.dark4, 1, 0.5);
 			var x = 0.;
 			var zoomed_grid_size = grid_size*zoom;
 			while(x<this.width){
