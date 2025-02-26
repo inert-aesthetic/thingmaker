@@ -55,6 +55,8 @@ class Main extends App{
         Toolkit.theme = 'dark';
         this.engine.backgroundColor = Nord.dark1;
         //Startup sequence
+        Comms.subscribe(REQUEST_CLOSE_APP, (c, p)->Sys.exit(0), 'Main');
+
         Comms.subscribe(PROJECT_CHANGED(null), onProjectChanged, "Main");
 
         //hook up handlers

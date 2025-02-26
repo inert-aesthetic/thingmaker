@@ -13,6 +13,8 @@
             <menuitem id="change_construct_btn" text="Change Construct" />    
             <menuseparator />  
             <menuitem id="open_project_btn" text="Change Project" />
+            <menuseparator />
+            <menuitem id="close_app_btn" text="Close App" />
         </menu>
         <menu text="Project">
             <menuitem id="manage_property_defs_btn" text="Property Definitions" />

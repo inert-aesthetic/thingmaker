@@ -142,6 +142,11 @@ class UIEditorLayout extends VBox {
 		WindowManager.instance.addWindow(new UIProjectSettings(project));
 	}
 
+	@:bind(close_app_btn, MouseEvent.CLICK)
+	function onCloseAppBtnClicked(e){
+		Comms.send(REQUEST_CLOSE_APP, this);
+	}
+
 	@:bind(ruler_btn, MouseEvent.CLICK)
 	function onRulerBtnClicked(e){
 		mainview.show_grid = !mainview.show_grid;

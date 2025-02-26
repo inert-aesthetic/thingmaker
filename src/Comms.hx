@@ -152,4 +152,5 @@ enum CommType{
     REQUEST_ENTITY_HIERARCHY_MENU(tree_node:TreeViewNode, entity:Entity, construct:Entity, mouse_x:Float, mouse_y:Float);
     REQUEST_CUT_ENTITY(entity:Entity);
     REQUEST_PASTE_ENTITY(entity:Entity);
+    REQUEST_CLOSE_APP;
 }
