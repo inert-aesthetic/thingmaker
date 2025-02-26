@@ -333,19 +333,19 @@ class UITimelineEditor extends VBox{
         var val = on_end_drp.selectedItem.text;
         switch val{
             case "Stop":
-                current_state?.onEnd = STOP;
+                if(current_state!=null) current_state.onEnd = STOP;
                 on_end_frame_stp.visible=false;
                 on_end_state_drp.visible=false;
             case "Loop":
-                current_state?.onEnd = LOOP;
+                if(current_state!=null) current_state.onEnd = LOOP;
                 on_end_frame_stp.visible=false;
                 on_end_state_drp.visible=false;
             case "Go to frame":
-                current_state?.onEnd = GO_TO_FRAME(Std.int(on_end_frame_stp.pos));
+                if(current_state!=null) current_state.onEnd = GO_TO_FRAME(Std.int(on_end_frame_stp.pos));
                 on_end_frame_stp.visible=true;
                 on_end_state_drp.visible=false;
             case "Go to state":
-                current_state?.onEnd = GO_TO_STATE(on_end_state_drp.selectedItem);
+                if(current_state!=null) current_state.onEnd = GO_TO_STATE(on_end_state_drp.selectedItem);
                 on_end_frame_stp.visible=false;
                 on_end_state_drp.visible=true;
             default:

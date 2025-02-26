@@ -269,7 +269,7 @@ class UIPropertyExplorer extends VBox{
                     case SELECT:
                         var dd = editor.editor.findComponent(null, DropDown, true);
                         var val = object.getValue(propertydef).intValue();
-                        dd?.selectedItem={text:propertydef.options[val], value:null};
+                        if(dd!=null) dd.selectedItem={text:propertydef.options[val], value:null};
                     default:
                         editor.editor.value=object.getValue(propertydef).getValueAsDynamic();
                 }
