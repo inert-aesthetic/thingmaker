@@ -5,11 +5,18 @@ An app for making things.
 Breaking changes with no changelog.
 
 ## building
-Requires pasta-physic and thinglib.
+Requires pasta-physic and thinglib, and logger.
 ```
 haxelib git pasta-physic https://github.com/inert-aesthetic/pasta-physic.git
-haxelib git pasta-physic https://github.com/inert-aesthetic/thinglib.git
+haxelib git thinglib https://github.com/inert-aesthetic/thinglib.git
+haxelib git logger https://github.com/Geokureli/Logger.git
 ```
+
+On Windows, msdfgen.exe must be available in your PATH, as it is a secret Heaps.io dependency.
+Get a release from: `https://github.com/Chlumsky/msdfgen`
+
+On Linux, inkscape must be available in your PATH.
+`sudo apt install inkscape` or however your package manager works.
 
 You *must* use git version of haxeui-core and haxeui-heaps.
 
