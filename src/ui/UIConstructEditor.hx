@@ -1075,8 +1075,8 @@ class UIConstructEditor extends Canvas{
 			}
 			if(entity.hasPosition()&&entity.timeline!=null&&entity.hasTimelineController()){
 				var etc = entity.asTimelineControlled();
-				var x_track = etc.current_state.getTrackFor(CoreComponentPosition.x_def);
-				var y_track = etc.current_state.getTrackFor(CoreComponentPosition.y_def);
+				var x_track = etc.current_state?.getTrackFor(CoreComponentPosition.x_def);
+				var y_track = etc.current_state?.getTrackFor(CoreComponentPosition.y_def);
 				if(x_track!=null&&y_track!=null){
 					var positions:Array<Vect> = [];
 					var xkf:Array<TimelineIndexedKeyframe> = (x_track?.getAllKeyframes())??[];

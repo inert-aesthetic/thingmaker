@@ -512,7 +512,7 @@ class UITimelineEditor extends VBox{
         playhead.left = 18+current_frame*20*zoom_factor;
         target.frame = current_frame;
         Comms.send(PROPERTY_VALUE_CHANGED(CoreComponentTimelineControl.frame_def, [target]), this);
-        for(t in target.current_state.tracks){
+        for(t in target.current_state?.tracks??[]){
             Comms.send(PROPERTY_VALUE_CHANGED(target.reference.getRoot().unsafeGet(t.target), [target]), this);
         }
         return current_frame;
