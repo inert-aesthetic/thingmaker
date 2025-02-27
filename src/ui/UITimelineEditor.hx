@@ -141,6 +141,8 @@ class UITimelineEditor extends VBox{
     override function onReady(){
         super.onReady();
         contentScroller.scrollMode = NORMAL; //prevent dragging keyframe from dragging scroll view
+        headerScroller.scrollMode = NORMAL; //prevent dragging keyframe from dragging scroll view
+        tracksScroller.scrollMode = NORMAL; //prevent dragging keyframe from dragging scroll view
         
         var interpolation_ds = new ArrayDataSource<InterpolationMethod>();
         InterpolationMethod.createAll().iter(t->{
