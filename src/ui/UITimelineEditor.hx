@@ -50,50 +50,56 @@ using thinglib.component.util.EntityTools;
         filter: invert(1) tint($nord-light1, 1);
     }
     </style>
-    <hbox id="timeline_control_bar">
-        <button id="add_state_btn" text="+"/>
-        <button id="remove_state_btn" text="-"/>
+    <hbox id="timeline_control_bar" width="100%">
+        <button id="add_state_btn" width="25" text="+"/>
+        <button id="remove_state_btn" width="25" text="-"/>
         <dropdown id="states_drp" width="100px">
         </dropdown>
         <rule direction="vertical" height="100%" />
-        <label text="Frames:"verticalAlign="center" width="90px"/>
-        <number-stepper id="frames_stp" pos="30" step="1" min="1" />
-        <rule direction="vertical" height="100%" />
-        <button id="to_start_btn" icon="${Icon.fast_backward_16}" styleName="timeline-button"/>
-        <button id="to_prev_btn" icon="${Icon.step_backward_16}" styleName="timeline-button"/>
-        <button id="play_pause_btn" icon="${Icon.play_16}" styleName="timeline-button"/>
-        <button id="to_next_btn" icon="${Icon.step_forward_16}" styleName="timeline-button"/>
-        <button id="to_end_btn" icon="${Icon.fast_forward_16}" styleName="timeline-button"/>
+        <button id="to_start_btn" icon="${Icon.fast_backward_16}" width="25" styleName="timeline-button"/>
+        <button id="to_prev_btn" icon="${Icon.step_backward_16}" width="25"  styleName="timeline-button"/>
+        <button id="play_pause_btn" icon="${Icon.play_16}" width="25"  styleName="timeline-button"/>
+        <button id="to_next_btn" icon="${Icon.step_forward_16}" width="25"  styleName="timeline-button"/>
+        <button id="to_end_btn" icon="${Icon.fast_forward_16}" width="25"  styleName="timeline-button"/>
         <rule direction="vertical" height="100%" />
         <dropdown id="add_track_drp" width="100px"/>
         <button id="add_track_btn" text="Add Track"/>
         <rule direction="vertical" height="100%" />
-        <label text="Interpolation" verticalAlign="center" width="110px"/>
-        <dropdown id="interpolation_drp" width="100px"/>
+        <hbox>
+            <label text="Interpolation" verticalAlign="center"/>
+            <dropdown id="interpolation_drp" width="100px"/>
+        </hbox>
         <rule direction="vertical" height="100%" />
-        <label text="On finish" verticalAlign="center"/>
-        <dropdown id="on_end_drp" width="100px">
-            <data>
-                <item text="Stop"/>
-                <item text="Loop"/>
-                <item text="Go to frame"/>
-                <item text="Go to state"/>
-            </data>
-        </dropdown>
-        <number-stepper id="on_end_frame_stp" pos="0" step="1" min="0"/>
-        <dropdown id="on_end_state_drp" width="100px"/>
-        <rule direction="vertical" height="100%"/>
-        <image resource="${Icon.search_20}" verticalAlign="center" style="filter: invert(1) tint($nord-light1, 1)"/>
-        <dropdown id="zoom_drp">
-            <data>
-                <item text="1.00x" value="${TimelineZoom.ONE}"/>
-                <item text="0.10x" value="${TimelineZoom.TEN}"/>
-                <item text="0.01x" value="${TimelineZoom.HUNDRED}"/>
-            </data>
-        </dropdown>
+        <hbox>
+            <label text="On finish" verticalAlign="center"/>
+            <dropdown id="on_end_drp" width="100px">
+                <data>
+                    <item text="Stop"/>
+                    <item text="Loop"/>
+                    <item text="Go to frame"/>
+                    <item text="Go to state"/>
+                </data>
+            </dropdown>
+            <number-stepper id="on_end_frame_stp" pos="0" step="1" min="0"/>
+            <dropdown id="on_end_state_drp" width="100px"/>
+        </hbox>
     </hbox>
     <grid id="mainGrid" width="100%" height="100%" style="spacing: 0px">
-        <spacer width="200"/>
+        <hbox width="200px">
+            <image resource="${Icon.search_16}" verticalAlign="center" style="filter: invert(1) tint($nord-light1, 1)"/>
+            <dropdown id="zoom_drp">
+                <data>
+                    <item text="1.00x" value="${TimelineZoom.ONE}"/>
+                    <item text="0.10x" value="${TimelineZoom.TEN}"/>
+                    <item text="0.01x" value="${TimelineZoom.HUNDRED}"/>
+                </data>
+            </dropdown>
+            <rule direction="vertical" height="100%" />
+            <hbox>
+                <label text="Frames"verticalAlign="center"/>
+                <number-stepper id="frames_stp" pos="30" step="1" min="1" width="60"/>
+            </hbox>
+        </hbox>
         <scrollview id="headerScroller" width="100%" styleNames="no-padding no-border" allowFocus="false" horizontalScrollPolicy="never">
             <hbox id="frameHolder" height="30" style="background-color: $nord-dark3; spacing:15px;padding-left:15px;">
             </hbox>
@@ -568,7 +574,7 @@ class UITimelineFrameMarker extends VBox{
 
 @:xml('
 <hbox width="100%" height="30" style="background-color: $nord-dark2;border-bottom:1px solid $nord-dark1;">
-    <button width="25px" height="25px" verticalAlign="center" id="remove_track_btn" icon="${Icon.trash_16}" tooltip="Remove track and all keyframes"/>
+    <button width="25px" height="25px" verticalAlign="center" id="remove_track_btn" icon="${Icon.trash_16}" tooltip="Remove track and all keyframes" styleName="timeline-button"/>
     <spacer width="5px"/>
     <label text="${track_name}" verticalAlign="center" width="80px" />
     <dropdown id="offset_drp" width="80px">

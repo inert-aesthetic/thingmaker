@@ -58,18 +58,7 @@ class UITimelineTab extends Box{
                         }
                         else{
                             if(entity.hasComponentByGUID(CoreComponent.TIMELINE_CONTROL)){
-                                if(entity.timeline.owner!=entity.guid){
-                                    //TODO replace with 'read only' timeline mode, where you can play/pause etc but not edit frames
-                                    addComponent(new UITimelineUnavailable("Selected entity's timeline is inherited from prefab.", true, ()->{
-                                    entity.timeline = Timeline.Create(entity);
-                                    selected_entities=[];
-                                    Comms.send(REQUEST_SELECT_ENTITIES([entity]), this);
-                                }));
-                                }
-                                else{
-                                    //Finally we are here with editable timeline
-                                    addComponent(new UITimelineEditor(entity.timeline, entity));
-                                }
+                                addComponent(new UITimelineEditor(entity.timeline, entity));
                             }
                             else{
                                 addComponent(new UITimelineUnavailable("Entity has no timeline controller component.", true, ()->{
