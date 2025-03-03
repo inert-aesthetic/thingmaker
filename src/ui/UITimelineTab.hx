@@ -39,7 +39,9 @@ class UITimelineTab extends Box{
                         return;
                     }
                     selected_entities=entities;
+                    this.pauseComponentValidation();
                     this.removeAllComponents();
+                    this.resumeComponentValidation();
                     if(entities?.length==0){
                         addComponent(new UITimelineUnavailable("No entity selected.", false));
                     }
@@ -58,7 +60,9 @@ class UITimelineTab extends Box{
                         }
                         else{
                             if(entity.hasComponentByGUID(CoreComponent.TIMELINE_CONTROL)){
+                                this.pauseComponentValidation();
                                 addComponent(new UITimelineEditor(entity.timeline, entity));
+                                this.resumeComponentValidation();
                             }
                             else{
                                 addComponent(new UITimelineUnavailable("Entity has no timeline controller component.", true, ()->{
