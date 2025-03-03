@@ -49,7 +49,15 @@ class UIFilePickerDialog extends Dialog{
     function onBtnOpen(e) {
         var filepath = txt_proj_path.text;
         var path = new Path(filepath);
-        var file = File.getContent(filepath);
-        callback(null, [{name:path.file, text:file, bytes:null, isBinary: false, fullPath: filepath}]);
+        try{
+            var file = File.getContent(filepath);
+            callback(null, [{name:path.file, text:file, bytes:null, isBinary: false, fullPath: filepath}]);
+        }
+        catch(e){
+            Comms.toast(Error, 'Error: $e', "Unable to open project");
+            #if debug
+            throw(e);
+            #end
+        }
     }
 }
