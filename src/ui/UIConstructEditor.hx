@@ -658,11 +658,18 @@ class UIConstructEditor extends Canvas{
 		}
 		n.addComponent(project.root.getThing(COMPONENT, CoreComponent.NODE));
 		var node = n.asNode();
-		parent.addChild(n);
-		node.global_position = new Vect(x, y);
-        Comms.send(ENTITY_ADDED([n]), this);
-		populateExplorer();
-		return n;
+		if(parent.canAcceptChild(n)){
+			parent.addChild(n);
+			node.global_position = new Vect(x, y);
+			Comms.send(ENTITY_ADDED([n]), this);
+			populateExplorer();
+			return n;
+		}
+		else{
+			Comms.toast(Warning,'$parent does not allow child like $n.', "Node not added");
+			n.remove();
+			return null;
+		}
 	}
 	function addEntity(parent:Entity):Entity{
 		parent=parent??construct;
