@@ -63,15 +63,15 @@ using thinglib.component.util.EntityTools;
         <button id="to_end_btn" icon="${Icon.fast_forward_16}" width="25"  styleName="timeline-button"/>
         <rule direction="vertical" height="100%" />
         <dropdown id="add_track_drp" width="100px"/>
-        <button id="add_track_btn" text="Add Track"/>
+        <button id="add_track_btn" tooltip="Add Track" icon="${Icon.add_row_bottom_16}" width="25"  styleName="timeline-button"/>
         <rule direction="vertical" height="100%" />
         <hbox>
-            <label text="Interpolation" verticalAlign="center"/>
+            <image resource="${Icon.flows_16}" verticalAlign="center" tooltip="Interpolation" style="filter: invert(1) tint($nord-light1, 1)"/>
             <dropdown id="interpolation_drp" width="100px"/>
         </hbox>
         <rule direction="vertical" height="100%" />
         <hbox>
-            <label text="On finish" verticalAlign="center"/>
+            <image resource="${Icon.flow_end_16}" verticalAlign="center" tooltip="On finish" style="filter: invert(1) tint($nord-light1, 1)"/>
             <dropdown id="on_end_drp" width="100px">
                 <data>
                     <item text="Stop"/>
@@ -86,18 +86,20 @@ using thinglib.component.util.EntityTools;
     </hbox>
     <grid id="mainGrid" width="100%" height="100%" style="spacing: 0px">
         <hbox width="200px">
-            <image resource="${Icon.search_16}" verticalAlign="center" style="filter: invert(1) tint($nord-light1, 1)"/>
-            <dropdown id="zoom_drp">
-                <data>
-                    <item text="1.00x" value="${TimelineZoom.ONE}"/>
-                    <item text="0.10x" value="${TimelineZoom.TEN}"/>
-                    <item text="0.01x" value="${TimelineZoom.HUNDRED}"/>
-                </data>
-            </dropdown>
+            <hbox>
+                <image resource="${Icon.search_16}" verticalAlign="center" style="filter: invert(1) tint($nord-light1, 1)"/>
+                <dropdown id="zoom_drp">
+                    <data>
+                        <item text="1.00x" value="${TimelineZoom.ONE}"/>
+                        <item text="0.10x" value="${TimelineZoom.TEN}"/>
+                        <item text="0.01x" value="${TimelineZoom.HUNDRED}"/>
+                    </data>
+                </dropdown>
+            </hbox>
             <rule direction="vertical" height="100%" />
             <hbox>
-                <label text="Frames"verticalAlign="center"/>
-                <number-stepper id="frames_stp" pos="30" step="1" min="1" width="60"/>
+                <image resource="${Icon.film_16}" verticalAlign="center" style="filter: invert(1) tint($nord-light1, 1)"/>
+                <number-stepper id="frames_stp" pos="30" step="1" min="1" width="90"/>
             </hbox>
         </hbox>
         <scrollview id="headerScroller" width="100%" styleNames="no-padding no-border" allowFocus="false" horizontalScrollPolicy="never">
