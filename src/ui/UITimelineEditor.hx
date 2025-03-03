@@ -287,8 +287,10 @@ class UITimelineEditor extends VBox{
 
     function selectState(stateName:String){
         if(current_state?.name==stateName) return;
+        this.pauseComponentValidation();
         tracksHolder.removeAllComponents();
         trackLabelsHolder.removeAllComponents();
+        this.resumeComponentValidation();
         tracks = [];
         var target_state = timeline.getState(stateName);
         if(target_state==null){
@@ -483,11 +485,21 @@ class UITimelineEditor extends VBox{
     }
 
     function rebuildFramesHeader(){
+        frameHolder.pauseComponentValidation();
         frameHolder.removeAllComponents();
+        if(frames>5000){
+            zoom_drp.selectedIndex = 2;
+        }
+        else if(frames > 500){
+            zoom_drp.selectedIndex = 1;
+        }
+        onZoomDropChange(null);
         frameHolder.width=(frames+1/zoom_factor)*20*zoom_factor;
+
         for(i in 0...(Math.ceil(frames*zoom_factor))){
             frameHolder.addComponent(new UITimelineFrameMarker(Math.round(i/zoom_factor), Math.round(5/zoom_factor)));
         }
+        frameHolder.resumeComponentValidation();
     }
 
     public function keyframeSelected(keyframe:UITimelineKeyframe, track:UITimelineTrack){
