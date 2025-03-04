@@ -51,10 +51,14 @@ using thinglib.component.util.EntityTools;
     }
     </style>
     <hbox id="timeline_control_bar" width="100%">
+        <button id="save_timeline_btn" icon="${Icon.floppy_disk_16}" width="25" tooltip="Save timeline changes" styleName="timeline-button"/>
+        <image resource="${Icon.layout_linear_16}" verticalAlign="center" tooltip="Interpolation" style="filter: invert(1) tint($nord-light1, 1)"/>
+        <button id="add_timeline_btn" width="25" text="+"/>
+        <dropdown id="timelines_drp" width="200px" text="Select Timeline"/>
+        <rule direction="vertical" height="100%" />
         <button id="add_state_btn" width="25" text="+"/>
         <button id="remove_state_btn" width="25" text="-"/>
-        <dropdown id="states_drp" width="100px">
-        </dropdown>
+        <dropdown id="states_drp" width="100px"/>
         <rule direction="vertical" height="100%" />
         <button id="to_start_btn" icon="${Icon.fast_backward_16}" width="25" styleName="timeline-button"/>
         <button id="to_prev_btn" icon="${Icon.step_backward_16}" width="25"  styleName="timeline-button"/>
@@ -333,6 +337,21 @@ class UITimelineEditor extends VBox{
         }
         // onEndDrpChange(null);
         updateAvailableProps();
+    }
+
+    @:bind(add_timeline_btn, MouseEvent.CLICK)
+    function onAddTimelineButtonClicked(e){
+        new UITextInputModal("Timeline Name", (res, name)->{
+            if(!res) return;
+            var nt = Timeline.Create(target, name);
+            target.timeline=nt;
+            Comms.toast(Success, 'Created timeline "${nt.name}".', "New Timeline Created");
+        }).show();
+    }
+
+    @:bind(save_timeline_btn, MouseEvent.CLICK)
+    function onSaveTimelineButtonClicked(e){
+        Comms.send(REQUEST_SAVE_THING(timeline), this);
     }
 
     @:bind(frames_stp, UIEvent.CHANGE)
