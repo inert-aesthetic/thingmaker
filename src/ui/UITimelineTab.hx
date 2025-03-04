@@ -32,6 +32,19 @@ class UITimelineTab extends Box{
     var selected_entities:Array<Entity> = [];
     public function new(){
         super();
+        Comms.subscribe(TIMELINE_CHANGED(null, null), (c, p)->{
+            
+            switch c {
+                default:
+                case TIMELINE_CHANGED(entities, timeline):
+                    if(entities.length==1&&selected_entities.length==1&&selected_entities[0].isEqualTo(entities[0])){
+                        this.pauseComponentValidation();
+                        this.removeAllComponents();
+                        addComponent(new UITimelineEditor(timeline, entities[0]));
+                        this.resumeComponentValidation();
+                    }
+            }
+        }, this);
         Comms.subscribe(SELECTED_ENTITIES_CHANGED(null), (c, p)->{
             switch c {
                 case SELECTED_ENTITIES_CHANGED(entities):

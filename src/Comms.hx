@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package;
 
+import thinglib.timeline.Timeline;
 import haxe.ui.containers.TreeViewNode;
 import ui.UIEntityHierarchy.TreeNodeData;
 import debug.Logger;
@@ -153,4 +154,5 @@ enum CommType{
     REQUEST_CUT_ENTITY(entity:Entity);
     REQUEST_PASTE_ENTITY(entity:Entity);
     REQUEST_CLOSE_APP;
+    TIMELINE_CHANGED(entities:Array<Entity>, timeline:Timeline);
 }

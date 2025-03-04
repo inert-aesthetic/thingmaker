@@ -346,6 +346,7 @@ class UITimelineEditor extends VBox{
             var nt = Timeline.Create(target, name);
             target.timeline=nt;
             Comms.toast(Success, 'Created timeline "${nt.name}".', "New Timeline Created");
+            Comms.send(TIMELINE_CHANGED([target], nt), this);
         }).show();
     }
 
