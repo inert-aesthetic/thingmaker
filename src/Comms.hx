@@ -155,4 +155,6 @@ enum CommType{
     REQUEST_PASTE_ENTITY(entity:Entity);
     REQUEST_CLOSE_APP;
     TIMELINE_CHANGED(entities:Array<Entity>, timeline:Timeline);
+    REQUEST_ENUMERATE_TIMELINES;
+    TIMELINES_CHANGED(project:Project);
 }

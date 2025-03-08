@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package ui;
 
+import haxe.ui.components.DropDown;
 import thinglib.property.core.CoreComponents.CoreComponentTimelineControl;
 import thinglib.component.Accessors.TimelineControlled;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
@@ -52,9 +53,9 @@ using thinglib.component.util.EntityTools;
     </style>
     <hbox id="timeline_control_bar" width="100%">
         <button id="save_timeline_btn" icon="${Icon.floppy_disk_16}" width="25" tooltip="Save timeline changes" styleName="timeline-button"/>
-        <image resource="${Icon.layout_linear_16}" verticalAlign="center" tooltip="Interpolation" style="filter: invert(1) tint($nord-light1, 1)"/>
+        <image resource="${Icon.layout_linear_16}" verticalAlign="center" tooltip="Timeline" style="filter: invert(1) tint($nord-light1, 1)"/>
         <button id="add_timeline_btn" width="25" text="+"/>
-        <dropdown id="timelines_drp" width="200px" text="Select Timeline"/>
+        <UITimelineSelectionDrop id="timelines_drp"/>
         <rule direction="vertical" height="100%" />
         <button id="add_state_btn" width="25" text="+"/>
         <button id="remove_state_btn" width="25" text="-"/>
@@ -147,15 +148,17 @@ class UITimelineEditor extends VBox{
         
         this.target=target;
         this.timeline=timeline;
+        this.timelines_drp.target=target;
     
     }
 
     override function onReady(){
         super.onReady();
+        this.timelines_drp.updateAvailableTimelines();
         contentScroller.scrollMode = NORMAL; //prevent dragging keyframe from dragging scroll view
         headerScroller.scrollMode = NORMAL; //prevent dragging keyframe from dragging scroll view
         tracksScroller.scrollMode = NORMAL; //prevent dragging keyframe from dragging scroll view
-        
+        timelines_drp.updateAvailableTimelines();
         var interpolation_ds = new ArrayDataSource<InterpolationMethod>();
         InterpolationMethod.createAll().iter(t->{
             interpolation_ds.add(t);
@@ -204,6 +207,16 @@ class UITimelineEditor extends VBox{
                     }
             }
         }, this);
+        Comms.subscribe(ENTITY_PROPERTIES_CHANGED(null), (c, p)->{
+            switch c {
+                default:
+                case ENTITY_PROPERTIES_CHANGED(obj):
+                    if(target.isEqualTo(obj)){
+                        this.timelines_drp.updateAvailableTimelines();
+                    }
+            }
+        }, this);
+        Comms.subscribe(TIMELINES_CHANGED(null),(c, p)->timelines_drp.updateAvailableTimelines(), this);
         is_ready=true;
     }
 
@@ -863,4 +876,49 @@ enum TimelineZoom{
     ONE;
     TEN;
     HUNDRED;
+}
+
+@:xml('
+<dropdown width="200px" text="Select Timeline"/>
+')
+class UITimelineSelectionDrop extends DropDown{
+    public var target:Entity;
+    public function new(){
+        super();
+    }
+
+    public function updateAvailableTimelines(){
+        var timelines:Array<Timeline> = target.reference.getRoot().getAll(Timeline);
+        var ds = new ArrayDataSource<{text:String, value:Timeline}>();
+        ds.add({text:"No Timeline", value:null});
+        for(tl in timelines){
+            var can_add = true;
+            for(s in tl.states){
+                for(t in s.tracks){
+                    if(!target.hasPropByGUID(t.target)){
+                        can_add=false;
+                        break;
+                    }
+                }
+                if(!can_add) break;
+            }
+            if(can_add){
+                ds.add({text:tl.name, value:tl});
+            }
+        }
+        dataSource=ds;
+        if(target.timeline!=null){
+            text=target.timeline.name;
+        }
+        else{
+            text="No Timeline";
+        }
+    }
+
+    @:bind(this, UIEvent.CHANGE)
+    function onTimelinesDropChanged(e){
+            var nt:Timeline = selectedItem.value;
+            target.timeline=selectedItem.value;
+            Comms.send(TIMELINE_CHANGED([target], target.timeline), this);
+    }
 }

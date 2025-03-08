@@ -97,6 +97,12 @@ class Main extends App{
                 Comms.send(COMPONENTS_CHANGED(project), this);
             }
         }, "Main");
+        Comms.subscribe(REQUEST_ENUMERATE_TIMELINES, (c, p)->{
+            if(project!=null){
+                project.enumerateTimelines();
+                Comms.send(TIMELINES_CHANGED(project), this);
+            }
+        }, "Main");
         Comms.subscribe(REQUEST_ENUMERATE_CONSTRUCTS, (c, p)->{
             if(project!=null){
                 project.enumerateConstructs();
@@ -167,6 +173,7 @@ class Main extends App{
                 // Comms.send(AVAILABLE_CONSTRUCTS_CHANGED(project.availableConstructs, project), this);
                 Comms.send(REQUEST_ENUMERATE_COMPONENTS, this);
                 Comms.send(REQUEST_ENUMERATE_CONSTRUCTS, this);
+                Comms.send(REQUEST_ENUMERATE_TIMELINES, this);
                 Comms.send(REQUEST_STARTUP_CONSTRUCT, this);
             default:
         }

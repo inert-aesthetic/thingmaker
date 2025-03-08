@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package storage;
+import thinglib.timeline.Timeline;
 import thinglib.Util.ThingID;
 import thinglib.storage.Storage;
 import thinglib.ThingScape;
@@ -93,6 +94,16 @@ class Project{
             var stub = storage.loadMeta(n);
             if(!root.hasThing(stub.guid)){
                 storage.createFromFile(Component, root, n);
+            }
+        }
+    }
+
+    public function enumerateTimelines(){
+        var names = Util.getAllOfTypeInDirectory(thinglib.Consts.FILENAME_TIMELINE, workingDirectory.dir);
+        for(n in names){
+            var stub = storage.loadMeta(n);
+            if(!root.hasThing(stub.guid)){
+                storage.createFromFile(Timeline, root, n);
             }
         }
     }
