@@ -641,9 +641,9 @@ class UITimelineTrackLabel extends HBox{
         this.timeline = timeline;
         this.track=track;
         super();
-        offset_drp.text = switch track.offset {
-            case ABSOLUTE: "Absolute";
-            case RELATIVE: "Relative";
+        offset_drp.selectedItem=switch track.offset {
+            case ABSOLUTE: {text:"Absolute", value:track.offset};
+            case RELATIVE: {text:"Relative", value:track.offset};
         };
     }
 
