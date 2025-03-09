@@ -71,10 +71,13 @@ class UITimelineTab extends Box{
             var entity = entities[0];
             if(entity.timeline==null){
                 addComponent(new UITimelineUnavailable("Entity has no timeline.", true, ()->{
-                    entity.timeline = Timeline.Create(entity);
-                    entity.addComponent(entity.reference.getRoot().unsafeGet(CoreComponent.TIMELINE_CONTROL));
-                    selected_entities=[];
-                    Comms.send(REQUEST_SELECT_ENTITIES([entity]), this);
+                    new UITextInputModal("Timeline Name", (res, name)->{
+                        if(!res) return;
+                        entity.timeline = Timeline.Create(entity, name);
+                        entity.addComponent(entity.reference.getRoot().unsafeGet(CoreComponent.TIMELINE_CONTROL));
+                        selected_entities=[];
+                        Comms.send(REQUEST_SELECT_ENTITIES([entity]), this);
+                    }).show();
                 }));
                 var drp = new UITimelineSelectionDrop();
                 drp.target=entity;
