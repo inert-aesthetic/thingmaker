@@ -688,13 +688,20 @@ class UIConstructEditor extends Canvas{
 		else{
 			n = new Entity(parent);
 		}
-		if(parent.children_base_component!=null){
+		if(parent.children_base_component!=null&&!n.hasComponentByGUID(parent.children_base_component.guid)){
 			n.addComponent(parent.children_base_component);
+			Comms.toast(Info, '$parent requires children to have component ${parent.children_base_component}; adding to $n.', "Base Component Added");
 		}
-		parent.addChild(n);
-        Comms.send(ENTITY_ADDED([n]), this);
-		populateExplorer();
-		return n;
+		if(parent.canAcceptChild(n)){
+			parent.addChild(n);
+			Comms.send(ENTITY_ADDED([n]), this);
+			populateExplorer();
+			return n;
+		}
+		else{
+			Comms.toast(Warning, 'Could not add entity $n to $parent.', "Entity Not Added");
+		}
+		return null;
 	}
 	function addRegion(x:Float, y:Float, width:Float, height:Float):Entity{
 		var parent = selected.length==1?selected[0]:construct;
