@@ -191,7 +191,15 @@ class Main extends App{
         }
         else{
             //the last open construct is available -- just open it!
-            var loaded = project.storage.createFromFile(Entity, project.root, Util.fileName(project.lastOpenConstruct, thinglib.Consts.FILENAME_CONSTRUCT));
+            var filename = Util.fileName(project.lastOpenConstruct, thinglib.Consts.FILENAME_CONSTRUCT);
+            var stub = project.storage.loadMeta(filename);
+            var loaded:Entity;
+            if(project.root.hasThing(stub.guid)){
+                loaded = project.root.unsafeGet(stub.guid);
+            }
+            else{
+                loaded = project.storage.createFromFile(Entity, project.root, filename);
+            }
             if(loaded==null){
                 log.error("Fatal: Failed to open construct.");
                 return; //TODO Recovery from this error
@@ -217,7 +225,7 @@ class Main extends App{
 
                 // if we just recursively remove it...or add a 'destroy' to Entity, that would fix it?
                 
-                //project.root.removeThing(c);
+                c.destroy();
                 var reloaded = project.storage.createFromFile(Entity, project.root, c.filename);
                 project.setOpenConstruct(reloaded);
                 Comms.send(CONSTRUCT_CHANGED(reloaded), this);
