@@ -17,6 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package ui;
 
+import thinglib.component.Entity;
+import thinglib.Util.ThingID;
+import thinglib.Thing;
+import thinglib.storage.Reference;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.windows.Window;
 import haxe.ui.data.ArrayDataSource;
@@ -46,6 +50,16 @@ class UIPropertyDefEditor extends Window{
             ds.add(t);
         }
         type_drp.dataSource = ds;
+        
+        var root = list.reference.getRoot();
+        var tcds = new ArrayDataSource<{text:String, value:ThingID}>();
+        for(c in root.getAll(Component)){
+            tcds.add({text:c.name, value:c.guid});
+        }
+        for(e in root.getAll(Entity)){
+            tcds.add({text:e.name, value:e.guid});
+        }
+        constraint_drp.dataSource=tcds;
         switch mode {
             case ADD: 
                 this.title = list.name+": Add Prop";
@@ -71,6 +85,19 @@ class UIPropertyDefEditor extends Window{
                     case SELECT:
                         options_txt.text = (property.options??[]).join(",");
                         default_drp.selectedIndex = property.defaultValInt()??-1;
+                    case REF:
+                        if(property.ref_base_type_guid==Reference.EMPTY_ID){
+                            constraint_drp.selectedItem={text:"Any", value:Reference.EMPTY_ID};
+                        }
+                        else{
+                            var basetype:Thing = property.reference.getRoot().unsafeGet(property.ref_base_type_guid);
+                            if(basetype==null){
+                                constraint_drp.selectedItem={text:'Unknown: ${property.ref_base_type_guid}', value:property.ref_base_type_guid}
+                            }
+                            else{
+                                constraint_drp.selectedItem={text:'${basetype.name}(${basetype.thingType})', value:property.ref_base_type_guid}
+                            }
+                        }
                     case MULTI:
                         var arr = property.defaultValIntArray();
                         default_txt.text = property.defaultValIntArray().map(i->(property.options??[])[i]??'').join(',');
@@ -141,6 +168,9 @@ class UIPropertyDefEditor extends Window{
             case MULTI:
                 np.options = options_txt.text.split(",").filter(f->f!='');
                 np.default_value = MULTI(default_txt.text.split(",").map(t->np.options.indexOf(t)??-1).filter(v->v!=-1));
+            case REF:
+                np.default_value = REF(Reference.EMPTY_ID);
+                np.ref_base_type_guid = constraint_drp.selectedItem.value;
             default:
                 should_close = false;
                 Dialogs.messageBox('Invalid property type.', 'Error', 'error');
@@ -164,7 +194,7 @@ class UIPropertyDefEditor extends Window{
         default_chk.hidden=true;
         default_clr.hidden=true;
         options_txt.hidden=true;
-        
+        constraint_drp.hidden=true;
         var v:PropertyType = Std.string(type_drp.selectedItem);
         switch v {
             case INT:
@@ -197,6 +227,8 @@ class UIPropertyDefEditor extends Window{
                 default_drp.hidden=false;
                 onOptionsTxtChange(null);
                 //default_txt.hidden=false;
+            case REF:
+                constraint_drp.hidden=false;
             default:
         }
     }

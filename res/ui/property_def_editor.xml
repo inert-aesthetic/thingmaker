@@ -18,6 +18,9 @@
             
             <label text="Default Value" verticalAlign="center" hidden="${default_chk.hidden}"/>
             <checkbox id="default_chk" hidden="true"/>
+
+            <label text="Type Constraint" verticalAlign="center" hidden="${type_drp.hidden}"/>
+            <dropdown id="constraint_drp" hidden="true"/>
             
             <label text="Minimum Value" verticalAlign="center" hidden="${min_txt.hidden}"/>
             <textfield id="min_txt" hidden="true"/>
