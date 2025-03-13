@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package ui;
 
+import thinglib.Thing;
 import thinglib.component.Accessors.TimelineControlled;
 import thinglib.storage.Reference;
 import thinglib.Util.ThingID;
@@ -143,7 +144,17 @@ class UIPropertyExplorer extends VBox{
                             prop.type = "list";
                             var ds = new ArrayDataSource<{text:String, value:ThingID}>();
                             ds.add({text:"None", value:Reference.EMPTY_ID});
-                            for(n in construct?.getChildrenRecursive(true).Nodes()){
+                            var valid_choices:Array<Entity> = construct?.getChildrenRecursive(true);
+                            if(pd.ref_base_type_guid!=Reference.EMPTY_ID){
+                                var constraint:Thing = construct.reference.getRoot().unsafeGet(pd.ref_base_type_guid);
+                                if(constraint?.thingType==ENTITY){
+                                    valid_choices = valid_choices.filter(vc->vc.instanceOf?.isEqualTo(constraint));
+                                }
+                                else if(constraint?.thingType==COMPONENT){
+                                    valid_choices = valid_choices.filter(vc->vc.hasComponentByGUID(constraint.guid));
+                                }
+                            }
+                            for(n in valid_choices){
                                 ds.add({text:n.name, value:n.guid});
                             }
                             prop.dataSource=ds;

@@ -54,10 +54,10 @@ class UIPropertyDefEditor extends Window{
         var root = list.reference.getRoot();
         var tcds = new ArrayDataSource<{text:String, value:ThingID}>();
         for(c in root.getAll(Component)){
-            tcds.add({text:c.name, value:c.guid});
+            tcds.add({text:c.name+' (Component)', value:c.guid});
         }
         for(e in root.getAll(Entity)){
-            tcds.add({text:e.name, value:e.guid});
+            tcds.add({text:e.name+' (Prefab)', value:e.guid});
         }
         constraint_drp.dataSource=tcds;
         switch mode {
@@ -92,10 +92,11 @@ class UIPropertyDefEditor extends Window{
                         else{
                             var basetype:Thing = property.reference.getRoot().unsafeGet(property.ref_base_type_guid);
                             if(basetype==null){
-                                constraint_drp.selectedItem={text:'Unknown: ${property.ref_base_type_guid}', value:property.ref_base_type_guid}
+                                constraint_drp.selectedItem={text:'Unknown: ${property.ref_base_type_guid}', value:property.ref_base_type_guid};
                             }
                             else{
-                                constraint_drp.selectedItem={text:'${basetype.name}(${basetype.thingType})', value:property.ref_base_type_guid}
+                                constraint_drp.text='${basetype.name} (${basetype.thingType})';
+                                constraint_drp.value=property.ref_base_type_guid;
                             }
                         }
                     case MULTI:
