@@ -27,7 +27,22 @@ import haxe.ui.containers.ScrollView;
 import haxe.ui.events.MouseEvent;
 using Lambda;
 
-@:build(haxe.ui.ComponentBuilder.build("res/ui/asset_explorer.xml"))
+@:xml('
+<hbox width="100%" height="100%">
+<!--
+    <vbox width="15%" height="100%">
+    </vbox>
+-->
+    <scrollview contentWidth="100%" height="100%" width="100%" >
+        <hbox id="asset_box" continuous="true" width="100%" style="padding:10px;">
+        </hbox>
+    </scrollview>
+<!---
+    <vbox width="5%" height="100%">
+    </vbox>
+-->
+</hbox>
+')
 class UIAssetExplorer extends HBox{
     public function new(){
         super();
@@ -51,7 +66,43 @@ class UIAssetExplorer extends HBox{
     }
 }
 
-@:build(haxe.ui.ComponentBuilder.build("res/ui/asset_explorer_entry.xml"))
+@:xml('
+<box>
+    <style>
+        .assetItem{
+            margin: 5px;
+            width: 100px;
+            height: 100px;
+            clip:true;
+        }
+        .assetItem image{
+            filter: invert(1) tint($nord-light1, 1);
+            margin: 5px;
+            verticalAlign: center;
+        }
+        .assetItem:down{
+            background-color:$nord-dark1;
+        }
+
+    </style>
+    <button     
+        id="btn" 
+        toggle="true"
+        styleName="assetItem" 
+    >
+        <item-renderer>
+            <vbox width="100%">
+                <box width="40" height="40" horizontalAlign="center">
+                    <image id="icon_img" 
+                        verticalAlign="bottom"
+                        horizontalAlign="center"
+                    />
+                </box>
+                <label width="100%" id="text"/> 
+            </vbox>
+        </item-renderer>
+    </button>
+</box>')
 class UIAssetExplorerItem extends Box{
 
     public function new(item:Entity){
