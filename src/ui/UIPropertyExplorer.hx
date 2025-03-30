@@ -340,8 +340,7 @@ class UIPropertyExplorer extends VBox{
                     case SELECT:
                         prop.type = "list";
                         var ds = new ArrayDataSource();
-                        var id:Int = 0;
-                        for(o in prop_def.options) ds.add({text:o, value:id++});
+                        for(value=>name in prop_def.options) ds.add({text:name, value:value});
                         prop.dataSource = ds;
                         prop.registerEvent(UIEvent.READY, e->
                         {

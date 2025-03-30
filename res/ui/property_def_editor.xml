@@ -7,8 +7,15 @@
             <label text="Type" verticalAlign="center" hidden="${type_drp.hidden}"/>
             <dropdown id="type_drp" text="Select Type" verticalAlign="center" />
 
-            <label text="Options" verticalAlign="center" hidden="${options_txt.hidden}"/>
-            <textarea height="100" id="options_txt" hidden="true"/>
+            <label text="Options" verticalAlign="center" hidden="${options_grd.hidden}"/>
+            <!-- <textarea height="100" id="options_txt" hidden="true"/> -->
+            <property-grid id="options_grd" width="100%" height="300" hidden="true">
+                <property-group id="options_grp" text="Options">
+                    <header style="spacing: 5px;">
+                        <button id="add_option_btn" text="+"/>
+                    </header>
+                </property-group>
+            </property-grid>
             
             <label text="Default Value" verticalAlign="center" hidden="${default_txt.hidden}"/>
             <textfield id="default_txt" hidden="true"/>
@@ -42,18 +49,6 @@
         </grid>
         <box width="10"></box>
         <grid>
-            <!-- <label text="Available on Nodes" verticalAlign="center"/>
-            <checkbox id="nodes_chk"/>
-
-            <label text="Available on Edges" verticalAlign="center"/>
-            <checkbox id="edges_chk"/>
-
-            <label text="Available on Regions" verticalAlign="center"/>
-            <checkbox id="regions_chk"/>
-            
-            <label text="Available on Groups" verticalAlign="center"/>
-            <checkbox id="groups_chk"/>  -->
-
             <label text="Show in Property Explorer" verticalAlign="center"/>
             <checkbox id="show_in_prop_explorer_chk"/>
         </grid> 

@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package ui;
 
+import haxe.ui.containers.properties.Property;
 import thinglib.component.Entity;
 import thinglib.Util.ThingID;
 import thinglib.Thing;
@@ -83,7 +84,8 @@ class UIPropertyDefEditor extends Window{
                     case COLOR:
                         if(property.default_value!=NONE) this.default_clr.value = property.defaultValInt();
                     case SELECT:
-                        options_txt.text = (property.options??[]).join(",");
+                        populateOptions(property.options);
+                        // options_txt.text = (property.options??[]).join(",");
                         default_drp.selectedIndex = property.defaultValInt()??-1;
                     case REF:
                         if(property.ref_base_type_guid==Reference.EMPTY_ID){
@@ -100,9 +102,10 @@ class UIPropertyDefEditor extends Window{
                             }
                         }
                     case MULTI:
+                        populateOptions(property.options);
                         var arr = property.defaultValIntArray();
                         default_txt.text = property.defaultValIntArray().map(i->(property.options??[])[i]??'').join(',');
-                        options_txt.text = (property.options??[]).join(",");
+                        // options_txt.text = (property.options??[]).join(",");
                     default:
                 }
                 name_txt.text = property.name;
@@ -118,12 +121,23 @@ class UIPropertyDefEditor extends Window{
         }
     }
 
-    @:bind(options_txt, UIEvent.CHANGE)
-    function onOptionsTxtChange(e){
-        multids.clear();
-        options_txt.text.split(",").iter(o->multids.add(o));
-        default_drp.selectedIndex = -1;
-        default_drp.text = "(None)";
+    // @:bind(options_txt, UIEvent.CHANGE)
+    // function onOptionsTxtChange(e){
+    //     multids.clear();
+    //     options_txt.text.split(",").iter(o->multids.add(o));
+    //     default_drp.selectedIndex = -1;
+    //     default_drp.text = "(None)";
+    // }
+
+    function populateOptions(options:Map<Int, String>){
+        if(options==null) return;
+        for(index=>option in options){
+            var prop = new Property();
+            prop.type="text";
+            prop.label = Std.string(index);
+            prop.value = option;
+            options_grd.addComponent(prop);
+        }
     }
 
     @:bind(finish_btn, MouseEvent.CLICK)
@@ -164,10 +178,10 @@ class UIPropertyDefEditor extends Window{
             case COLOR:
                 np.default_value = COLOR(Std.parseInt(Std.string(default_clr.value)));
             case SELECT:
-                np.options = options_txt.text.split(",").filter(f->f!='');
+                // np.options = options_txt.text.split(",").filter(f->f!='');
                 np.default_value = SELECT(default_drp.selectedIndex);
             case MULTI:
-                np.options = options_txt.text.split(",").filter(f->f!='');
+                // np.options = options_txt.text.split(",").filter(f->f!='');
                 np.default_value = MULTI(default_txt.text.split(",").map(t->np.options.indexOf(t)??-1).filter(v->v!=-1));
             case REF:
                 np.default_value = REF(Reference.EMPTY_ID);
@@ -194,7 +208,8 @@ class UIPropertyDefEditor extends Window{
         precision_txt.hidden=true;
         default_chk.hidden=true;
         default_clr.hidden=true;
-        options_txt.hidden=true;
+        // options_txt.hidden=true;
+        options_grd.hidden=true;
         constraint_drp.hidden=true;
         var v:PropertyType = Std.string(type_drp.selectedItem);
         switch v {
@@ -224,9 +239,10 @@ class UIPropertyDefEditor extends Window{
             case COLOR:
                 default_clr.hidden=false;
             case SELECT, MULTI:
-                options_txt.hidden=false;
+                // options_txt.hidden=false;
+                options_grd.hidden = false;
                 default_drp.hidden=false;
-                onOptionsTxtChange(null);
+                // onOptionsTxtChange(null);
                 //default_txt.hidden=false;
             case REF:
                 constraint_drp.hidden=false;

@@ -60,8 +60,7 @@ class UIMultiPropEditor extends Window{
             this.error_txt.hidden = false;
         }
 
-        for(o in def.options){
-            var index = def.options.indexOf(o);
+        for(index=>o in def.options){
             var initial = targets[0].getValue(def).intArrayValue()?.contains(index)??false;
             var changed = false;
             var prop = new Property();
