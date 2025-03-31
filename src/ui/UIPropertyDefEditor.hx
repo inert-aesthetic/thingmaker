@@ -32,16 +32,13 @@ import thinglib.property.Component;
 using Lambda;
 
 @:xml('
-<window title="Property Settings" width="600" height="600">
+<window title="Property Settings" width="600" >
     <grid width="100%">
         <label text="Name" verticalAlign="center"/>
         <textfield id="name_txt"/>
-
-        <label text="Show in Property Explorer" verticalAlign="center"/>
-        <checkbox id="show_in_prop_explorer_chk"/>
         
         <label text="Type" verticalAlign="center" hidden="${type_drp.hidden}"/>
-        <dropdown id="type_drp" text="Select Type" verticalAlign="center" />
+        <dropdown id="type_drp" text="Select Type" width="100%" verticalAlign="center" />
 
         <label text="Options" verticalAlign="center" hidden="${options_grd.hidden}"/>
         <!-- <textarea height="100" id="options_txt" hidden="true"/> -->
@@ -63,7 +60,7 @@ using Lambda;
         <checkbox id="default_chk" hidden="true"/>
 
         <label text="Type Constraint" verticalAlign="center" hidden="${constraint_drp.hidden}"/>
-        <dropdown id="constraint_drp" hidden="true"/>
+        <dropdown id="constraint_drp" width="100%" hidden="true"/>
         
         <label text="Minimum Value" verticalAlign="center" hidden="${min_txt.hidden}"/>
         <textfield id="min_txt" hidden="true"/>
@@ -76,6 +73,9 @@ using Lambda;
         
         <label text="Default Color" verticalAlign="center" hidden="${default_clr.hidden}"/>
         <ColorPickerPopup id="default_clr" hidden="true"/>
+
+        <label text="Timeline Controllable" verticalAlign="center"/>
+        <checkbox id="timeline_controllable_chk"/>
     
         <label text="Extra Data" verticalAlign="center"/>
         <textfield id="extra_txt"/>
@@ -88,8 +88,10 @@ using Lambda;
 ')
 class UIPropertyDefEditor extends Window{
     var list:Component;
+    var def:PropertyDef;
     var mode:PropDefEditorMode;
-    var multids:ArrayDataSource<String> = new ArrayDataSource();
+    var multids:ArrayDataSource<{text:String, value:Int}> = new ArrayDataSource();
+    var options:Map<Int, String>;
     var onComplete:()->Void;
     public function new(list:Component, mode:PropDefEditorMode=ADD){
         super();
@@ -118,6 +120,7 @@ class UIPropertyDefEditor extends Window{
         switch mode {
             case ADD: 
                 this.title = list.name+": Add Prop";
+                this.options = new Map();
             case EDIT(property): 
                 type_drp.selectedItem=property.type;
                 switch property.type {
@@ -138,9 +141,14 @@ class UIPropertyDefEditor extends Window{
                     case COLOR:
                         if(property.default_value!=NONE) this.default_clr.value = property.defaultValInt();
                     case SELECT:
-                        populateOptions(property.options);
-                        // options_txt.text = (property.options??[]).join(",");
-                        default_drp.selectedIndex = property.defaultValInt()??-1;
+                        var selected_default = property.defaultValInt();
+                        if(property.options?.exists(selected_default)){
+                            default_drp.selectedItem = {text:property.options[selected_default], value:selected_default};
+                        }
+                        else{
+                            default_drp.selectedItem = {text:"(none)", value:-1};
+                            
+                        }
                     case REF:
                         if(property.ref_base_type_guid==Reference.EMPTY_ID){
                             constraint_drp.selectedItem={text:"Any", value:Reference.EMPTY_ID};
@@ -156,41 +164,60 @@ class UIPropertyDefEditor extends Window{
                             }
                         }
                     case MULTI:
-                        populateOptions(property.options);
                         var arr = property.defaultValIntArray();
                         default_txt.text = property.defaultValIntArray().map(i->(property.options??[])[i]??'').join(',');
-                        // options_txt.text = (property.options??[]).join(",");
                     default:
                 }
                 name_txt.text = property.name;
-                // nodes_chk.value = property.available_on_nodes;
-                // edges_chk.value = property.available_on_edges;
-                // groups_chk.value = property.available_on_groups;
-                // regions_chk.value = property.available_on_regions;
-                //show_in_prop_explorer_chk.value = property.user_selectable;
+                timeline_controllable_chk.value = property.timeline_controllable;
                 documentation_txt.value = property.documentation??"";
                 extra_txt.value = property.extra_data??"";
                 finish_btn.text = "Save";
+                this.options=property.options?.copy()??null;
+                if(options!=null){
+                    populateOptions();
+                }
                 this.title = property.name+": Edit Prop";
         }
     }
 
     // @:bind(options_txt, UIEvent.CHANGE)
-    // function onOptionsTxtChange(e){
-    //     multids.clear();
-    //     options_txt.text.split(",").iter(o->multids.add(o));
-    //     default_drp.selectedIndex = -1;
-    //     default_drp.text = "(None)";
-    // }
+    function onOptionsTxtChange(e){
+        multids.clear();
+        for(id=>o in options){
+            multids.add({text:o, value:id});
+        }
+        default_drp.selectedIndex = -1;
+        default_drp.text = "(None)";
+    }
 
-    function populateOptions(options:Map<Int, String>){
+    @:bind(add_option_btn, MouseEvent.CLICK)
+    function onAddOptionClicked(e){
+        var newid = 0;
+        for(id in options.keys()){
+            if(id>=newid){
+                newid = id+1;
+            }
+        }
+        options.set(newid, "");
+        addOptionEntry(newid, "");
+    }
+
+    function addOptionEntry(id:Int, name:String){
+        var prop = new Property();
+        prop.type="text";
+        prop.label = Std.string(id);
+        prop.value = name;
+        options_grp.addComponent(prop);
+        prop.onChange = (e)->{
+            options.set(id, prop.value);
+        };
+    }
+
+    function populateOptions(){
         if(options==null) return;
         for(index=>option in options){
-            var prop = new Property();
-            prop.type="text";
-            prop.label = Std.string(index);
-            prop.value = option;
-            options_grd.addComponent(prop);
+            addOptionEntry(index, option);
         }
     }
 
@@ -204,14 +231,9 @@ class UIPropertyDefEditor extends Window{
         }
         np.name = name_txt.text;
         np.type = type;
-        // np.available_on_constructs = constructs_chk.value;
-        // np.available_on_edges = edges_chk.value;
-        // np.available_on_nodes = nodes_chk.value;
-        // np.available_on_groups = groups_chk.value;
-        // np.available_on_regions = regions_chk.value;
         np.documentation = documentation_txt.value;
         np.extra_data = extra_txt.value;
-        //np.user_selectable = show_in_prop_explorer_chk.value;
+        np.timeline_controllable = timeline_controllable_chk.value;
 
         var should_close = true;
         switch type {
@@ -232,10 +254,10 @@ class UIPropertyDefEditor extends Window{
             case COLOR:
                 np.default_value = COLOR(Std.parseInt(Std.string(default_clr.value)));
             case SELECT:
-                // np.options = options_txt.text.split(",").filter(f->f!='');
+                np.options = options.copy();
                 np.default_value = SELECT(default_drp.selectedIndex);
             case MULTI:
-                // np.options = options_txt.text.split(",").filter(f->f!='');
+                np.options = options.copy();
                 np.default_value = MULTI(default_txt.text.split(",").map(t->np.options.indexOf(t)??-1).filter(v->v!=-1));
             case REF:
                 np.default_value = REF(Reference.EMPTY_ID);
