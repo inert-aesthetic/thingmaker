@@ -31,7 +31,61 @@ import thinglib.property.PropertyDef;
 import thinglib.property.Component;
 using Lambda;
 
-@:build(haxe.ui.ComponentBuilder.build("res/ui/property_def_editor.xml"))
+@:xml('
+<window title="Property Settings" width="600" height="600">
+    <grid width="100%">
+        <label text="Name" verticalAlign="center"/>
+        <textfield id="name_txt"/>
+
+        <label text="Show in Property Explorer" verticalAlign="center"/>
+        <checkbox id="show_in_prop_explorer_chk"/>
+        
+        <label text="Type" verticalAlign="center" hidden="${type_drp.hidden}"/>
+        <dropdown id="type_drp" text="Select Type" verticalAlign="center" />
+
+        <label text="Options" verticalAlign="center" hidden="${options_grd.hidden}"/>
+        <!-- <textarea height="100" id="options_txt" hidden="true"/> -->
+        <property-grid id="options_grd" width="100%" height="300" hidden="true">
+            <property-group id="options_grp" text="Options">
+                <header style="spacing: 5px;">
+                    <button id="add_option_btn" text="+"/>
+                </header>
+            </property-group>
+        </property-grid>
+        
+        <label text="Default Value" verticalAlign="center" hidden="${default_txt.hidden}"/>
+        <textfield id="default_txt" hidden="true"/>
+
+        <label text="Default Value" verticalAlign="center" hidden="${default_drp.hidden}"/>
+        <dropdown id="default_drp" dataSource="${multids}" width="100%" text="(None)" hidden="true"/>
+        
+        <label text="Default Value" verticalAlign="center" hidden="${default_chk.hidden}"/>
+        <checkbox id="default_chk" hidden="true"/>
+
+        <label text="Type Constraint" verticalAlign="center" hidden="${constraint_drp.hidden}"/>
+        <dropdown id="constraint_drp" hidden="true"/>
+        
+        <label text="Minimum Value" verticalAlign="center" hidden="${min_txt.hidden}"/>
+        <textfield id="min_txt" hidden="true"/>
+        
+        <label text="Max Value" verticalAlign="center" hidden="${max_txt.hidden}"/>
+        <textfield id="max_txt" hidden="true"/>
+        
+        <label text="Step Size" verticalAlign="center" hidden="${precision_txt.hidden}"/>
+        <textfield id="precision_txt" hidden="true"/>
+        
+        <label text="Default Color" verticalAlign="center" hidden="${default_clr.hidden}"/>
+        <ColorPickerPopup id="default_clr" hidden="true"/>
+    
+        <label text="Extra Data" verticalAlign="center"/>
+        <textfield id="extra_txt"/>
+        
+        <label text="Documentation" verticalAlign="center"/>
+        <textarea id="documentation_txt" height="100"/>
+    </grid>
+    <button text="Add" id="finish_btn" disabled="${name_txt.text==''}"/>
+</window>
+')
 class UIPropertyDefEditor extends Window{
     var list:Component;
     var mode:PropDefEditorMode;
