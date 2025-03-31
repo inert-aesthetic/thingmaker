@@ -17,6 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package ui;
 
+import thinglib.property.Property.PropertyValue;
+import haxe.ui.containers.properties.PropertyGroup;
+import haxe.ui.containers.HBox;
 import haxe.ui.containers.properties.Property;
 import thinglib.component.Entity;
 import thinglib.Util.ThingID;
@@ -91,8 +94,10 @@ class UIPropertyDefEditor extends Window{
     var def:PropertyDef;
     var mode:PropDefEditorMode;
     var multids:ArrayDataSource<{text:String, value:Int}> = new ArrayDataSource();
+    var type:PropertyType;
     var options:Map<Int, String>;
     var onComplete:()->Void;
+    var props:Array<Property> = [];
     public function new(list:Component, mode:PropDefEditorMode=ADD){
         super();
         this.list = list;
@@ -123,6 +128,7 @@ class UIPropertyDefEditor extends Window{
                 this.options = new Map();
             case EDIT(property): 
                 type_drp.selectedItem=property.type;
+                type = property.type;
                 switch property.type {
                     case INT:
                         if(property.default_value!=NONE) this.default_txt.text = Std.string(property.defaultValInt());
@@ -146,8 +152,7 @@ class UIPropertyDefEditor extends Window{
                             default_drp.selectedItem = {text:property.options[selected_default], value:selected_default};
                         }
                         else{
-                            default_drp.selectedItem = {text:"(none)", value:-1};
-                            
+                            default_drp.selectedItem = {text:"(none)", value:-1};   
                         }
                     case REF:
                         if(property.ref_base_type_guid==Reference.EMPTY_ID){
@@ -206,15 +211,21 @@ class UIPropertyDefEditor extends Window{
     function addOptionEntry(id:Int, name:String){
         var prop = new Property();
         prop.type="text";
-        prop.label = Std.string(id);
         prop.value = name;
+        var control = new UIPropOptionsControl(options, id, options_grp, prop, type==MULTI);
+        prop.addComponent(control);
         options_grp.addComponent(prop);
+        props.push(prop);
         prop.onChange = (e)->{
             options.set(id, prop.value);
         };
     }
 
     function populateOptions(){
+        for(p in props){
+            options_grp.removeComponent(p);
+        }
+        props = [];
         if(options==null) return;
         for(index=>option in options){
             addOptionEntry(index, option);
@@ -288,6 +299,7 @@ class UIPropertyDefEditor extends Window{
         options_grd.hidden=true;
         constraint_drp.hidden=true;
         var v:PropertyType = Std.string(type_drp.selectedItem);
+        type=v;
         switch v {
             case INT:
                 default_txt.hidden=false;
@@ -307,17 +319,21 @@ class UIPropertyDefEditor extends Window{
                 min_txt.restrictChars="0-9-.";
                 max_txt.restrictChars="0-9-.";
                 precision_txt.restrictChars="0-9-.";
-            case STRING:
+            case STRING, URI:
                 default_txt.hidden=false;
                 default_txt.restrictChars="";
             case BOOL:
                 default_chk.hidden=false;
             case COLOR:
                 default_clr.hidden=false;
-            case SELECT, MULTI:
-                // options_txt.hidden=false;
+            case SELECT:
                 options_grd.hidden = false;
                 default_drp.hidden=false;
+                populateOptions();
+            case MULTI:
+                // options_txt.hidden=false;
+                options_grd.hidden = false;
+                populateOptions();
                 // onOptionsTxtChange(null);
                 //default_txt.hidden=false;
             case REF:
@@ -328,3 +344,35 @@ class UIPropertyDefEditor extends Window{
 }
 
 enum PropDefEditorMode{ADD; EDIT(property:PropertyDef);}
+
+
+@:xml('
+    <hbox>
+        <hbox width="100%">
+            <label text="${Std.string(index)}"/>
+        </hbox>
+        <button width="25px" height="25px" verticalAlign="center" id="remove_btn" text="x"/>
+        <checkbox verticalAlign="center" id="default_check" hidden="${!show_default_checkbox}"/>
+    </hbox>
+')
+class UIPropOptionsControl extends HBox{
+    var target:Map<Int, String>;
+    public var index:Int;
+    var group:PropertyGroup;
+    var property:Property;
+    var show_default_checkbox:Bool;
+    override public function new(target:Map<Int, String>, index:Int, group:PropertyGroup, property:Property, show_default_checkbox:Bool){
+        this.target = target;
+        this.index = index;
+        this.group = group;
+        this.show_default_checkbox = show_default_checkbox;
+        this.property = property;
+        super();
+    }
+
+    @:bind(remove_btn, MouseEvent.CLICK)
+    function removeButtonClicked(e){
+        target.remove(index);
+        group.removeComponent(property);
+    }
+}
