@@ -94,6 +94,7 @@ class UIPropertyDefEditor extends Window{
     var def:PropertyDef;
     var mode:PropDefEditorMode;
     var multids:ArrayDataSource<{text:String, value:Int}> = new ArrayDataSource();
+    var multidefaults:Array<Int> = [];
     var type:PropertyType;
     var options:Map<Int, String>;
     var onComplete:()->Void;
@@ -169,8 +170,7 @@ class UIPropertyDefEditor extends Window{
                             }
                         }
                     case MULTI:
-                        var arr = property.defaultValIntArray();
-                        default_txt.text = property.defaultValIntArray().map(i->(property.options??[])[i]??'').join(',');
+                        multidefaults = property.defaultValIntArray()?.copy()??[];
                     default:
                 }
                 name_txt.text = property.name;
@@ -187,13 +187,18 @@ class UIPropertyDefEditor extends Window{
     }
 
     // @:bind(options_txt, UIEvent.CHANGE)
-    function onOptionsTxtChange(e){
+    function onOptionsChange(e){
+        var old_value = default_drp.selectedItem?.value??-1;
         multids.clear();
         for(id=>o in options){
             multids.add({text:o, value:id});
         }
-        default_drp.selectedIndex = -1;
-        default_drp.text = "(None)";
+        if(!options.exists(old_value)){
+            default_drp.selectedItem = {text:"(none)", value:-1};
+        }
+        else{
+            default_drp.selectItemBy(v->v.value==old_value);
+        }
     }
 
     @:bind(add_option_btn, MouseEvent.CLICK)
@@ -212,12 +217,23 @@ class UIPropertyDefEditor extends Window{
         var prop = new Property();
         prop.type="text";
         prop.value = name;
-        var control = new UIPropOptionsControl(options, id, options_grp, prop, type==MULTI);
+        var control = new UIPropOptionsControl(options, id, options_grp, prop, type==MULTI, multidefaults.has(id), v->{
+            if(v){
+                if(!multidefaults.has(id)){
+                    multidefaults.push(id);
+                }
+            }
+            else{
+                multidefaults.remove(id);
+            }
+        }, 
+        id->onOptionsChange(null));
         prop.addComponent(control);
         options_grp.addComponent(prop);
         props.push(prop);
         prop.onChange = (e)->{
             options.set(id, prop.value);
+            onOptionsChange(null);
         };
     }
 
@@ -230,6 +246,7 @@ class UIPropertyDefEditor extends Window{
         for(index=>option in options){
             addOptionEntry(index, option);
         }
+        onOptionsChange(null);
     }
 
     @:bind(finish_btn, MouseEvent.CLICK)
@@ -266,10 +283,10 @@ class UIPropertyDefEditor extends Window{
                 np.default_value = COLOR(Std.parseInt(Std.string(default_clr.value)));
             case SELECT:
                 np.options = options.copy();
-                np.default_value = SELECT(default_drp.selectedIndex);
+                np.default_value = SELECT(default_drp.selectedItem.value);
             case MULTI:
                 np.options = options.copy();
-                np.default_value = MULTI(default_txt.text.split(",").map(t->np.options.indexOf(t)??-1).filter(v->v!=-1));
+                np.default_value = MULTI(multidefaults.copy());
             case REF:
                 np.default_value = REF(Reference.EMPTY_ID);
                 np.ref_base_type_guid = constraint_drp.selectedItem.value;
@@ -352,7 +369,7 @@ enum PropDefEditorMode{ADD; EDIT(property:PropertyDef);}
             <label text="${Std.string(index)}"/>
         </hbox>
         <button width="25px" height="25px" verticalAlign="center" id="remove_btn" text="x"/>
-        <checkbox verticalAlign="center" id="default_check" hidden="${!show_default_checkbox}"/>
+        <checkbox verticalAlign="center" id="default_check" value="${is_default}" hidden="${!show_default_checkbox}"/>
     </hbox>
 ')
 class UIPropOptionsControl extends HBox{
@@ -361,12 +378,16 @@ class UIPropOptionsControl extends HBox{
     var group:PropertyGroup;
     var property:Property;
     var show_default_checkbox:Bool;
-    override public function new(target:Map<Int, String>, index:Int, group:PropertyGroup, property:Property, show_default_checkbox:Bool){
+    var default_callback:Bool->Void;
+    var remove_callback:Int->Void;
+    override public function new(target:Map<Int, String>, index:Int, group:PropertyGroup, property:Property, show_default_checkbox:Bool, is_default:Bool, default_callback:Bool->Void, remove_callback:Int->Void){
         this.target = target;
         this.index = index;
         this.group = group;
         this.show_default_checkbox = show_default_checkbox;
         this.property = property;
+        this.default_callback=default_callback;
+        this.remove_callback=remove_callback;
         super();
     }
 
@@ -374,5 +395,15 @@ class UIPropOptionsControl extends HBox{
     function removeButtonClicked(e){
         target.remove(index);
         group.removeComponent(property);
+        if(remove_callback!=null){
+            remove_callback(index);
+        }
+    }
+
+    @:bind(default_check, UIEvent.CHANGE)
+    function defaultCheckboxChanged(e){
+        if(default_callback!=null){
+            default_callback(default_check.value);
+        }
     }
 }
