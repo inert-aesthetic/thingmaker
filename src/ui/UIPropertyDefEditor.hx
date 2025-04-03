@@ -97,13 +97,13 @@ class UIPropertyDefEditor extends Window{
     var multidefaults:Array<Int> = [];
     var type:PropertyType;
     var options:Map<Int, String>;
+    var selected_default:Int = -1;
     var onComplete:()->Void;
     var props:Array<Property> = [];
     public function new(list:Component, mode:PropDefEditorMode=ADD){
         super();
         this.list = list;
         this.mode = mode;
-
         this.name_txt.restrictChars="a-zA-Z0-9_";
         this.min_txt.restrictChars="0-9";
         this.max_txt.restrictChars="0-9";
@@ -130,6 +130,7 @@ class UIPropertyDefEditor extends Window{
             case EDIT(property): 
                 type_drp.selectedItem=property.type;
                 type = property.type;
+                def=property;
                 switch property.type {
                     case INT:
                         if(property.default_value!=NONE) this.default_txt.text = Std.string(property.defaultValInt());
@@ -148,13 +149,8 @@ class UIPropertyDefEditor extends Window{
                     case COLOR:
                         if(property.default_value!=NONE) this.default_clr.value = property.defaultValInt();
                     case SELECT:
-                        var selected_default = property.defaultValInt();
-                        if(property.options?.exists(selected_default)){
-                            default_drp.selectedItem = {text:property.options[selected_default], value:selected_default};
-                        }
-                        else{
-                            default_drp.selectedItem = {text:"(none)", value:-1};   
-                        }
+                        options=property.options?.copy()??[];
+                        populateOptions();
                     case REF:
                         if(property.ref_base_type_guid==Reference.EMPTY_ID){
                             constraint_drp.selectedItem={text:"Any", value:Reference.EMPTY_ID};
@@ -170,6 +166,8 @@ class UIPropertyDefEditor extends Window{
                             }
                         }
                     case MULTI:
+                        options=property.options?.copy()??[];
+                        populateOptions();
                         multidefaults = property.defaultValIntArray()?.copy()??[];
                     default:
                 }
@@ -178,26 +176,37 @@ class UIPropertyDefEditor extends Window{
                 documentation_txt.value = property.documentation??"";
                 extra_txt.value = property.extra_data??"";
                 finish_btn.text = "Save";
-                this.options=property.options?.copy()??null;
-                if(options!=null){
-                    populateOptions();
-                }
                 this.title = property.name+": Edit Prop";
         }
     }
 
-    // @:bind(options_txt, UIEvent.CHANGE)
+    override function onReady(){
+        if(def==null) return;
+        switch type {
+            default:
+            case SELECT:
+                selected_default = def.defaultValInt();
+                if(options.exists(selected_default)){
+                    var selected_name:String = options.get(selected_default);
+                    default_drp.selectedItem = {text:selected_name, value:selected_default};
+                }
+                else{
+                    default_drp.selectedItem = {text:"(none)", value:-1};   
+                }
+        }
+    }
+
     function onOptionsChange(e){
-        var old_value = default_drp.selectedItem?.value??-1;
+        var old_value = selected_default;
         multids.clear();
         for(id=>o in options){
             multids.add({text:o, value:id});
         }
-        if(!options.exists(old_value)){
-            default_drp.selectedItem = {text:"(none)", value:-1};
+        if(options.exists(old_value)){
+            default_drp.selectedItem = {text:options.get(old_value), value:old_value};
         }
         else{
-            default_drp.selectItemBy(v->v.value==old_value);
+            default_drp.selectedItem = {text:"(none)", value:-1};
         }
     }
 
@@ -302,6 +311,11 @@ class UIPropertyDefEditor extends Window{
             Comms.send(REQUEST_ENUMERATE_COMPONENTS, this);
             windowManager.closeWindow(this);
         }
+    }
+
+    @:bind(default_drp, UIEvent.CHANGE)
+    function onDefaultSelected(e){
+        selected_default=default_drp.selectedItem.value;
     }
 
     @:bind(type_drp, UIEvent.CHANGE)
