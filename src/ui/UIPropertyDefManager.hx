@@ -17,6 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package ui;
 
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.containers.dialogs.Dialog.DialogButton;
+import thinglib.property.PropertyDef;
+import haxe.ui.containers.dialogs.Dialogs;
 import thinglib.property.core.CoreComponents;
 import thinglib.property.core.CoreComponents.CoreComponentPosition;
 import haxe.ui.containers.TreeView;
@@ -46,11 +50,6 @@ using Lambda;
             </hbox>
             <button id="deleteprop_btn" text="Delete" height="20"/>
             <button id="editprop_btn" text="Edit" height="20"/>
-            <!-- <label text="Default: " verticalAlign="center"/>
-            <checkbox id="default_node_chk" text="Node" verticalAlign="center" />
-            <checkbox id="default_construct_chk" text="Construct" verticalAlign="center" />
-            <checkbox id="default_group_chk" text="Group" verticalAlign="center" />
-            <checkbox id="default_region_chk" text="Region" verticalAlign="center" /> -->
         </item-renderer>
         <item-renderer id="expandable" layout="horizontal" width="100%">
             <hbox width="100%">        
@@ -129,7 +128,21 @@ class UIPropertyDefManager extends Window{
                             }
                         ));
                     case "deleteprop_btn":
-                        var target = event.data.prop;
+                        var target:PropertyDef = event.data.prop;
+                        var component:Component = event.data.list;
+                        Dialogs.messageBox('Remove ${target.name} from ${component.name}?\n(This is applied immediately and can\'t be undone)', "Delete prop confirmation", 
+                        MessageBoxType.TYPE_YESNO, true, 
+                        res->{
+                            switch(res){
+                                case DialogButton.YES:
+                                    component.definitions.remove(target);
+                                    component.calculateDependencies();
+                                    target.reference.getRoot().removeThing(target);
+                                    project.storage.save(component.filename, component);
+                                    populate(components);
+                                default:
+                            }
+                        });
                     case "user_selectable_chk":
                         var comp:Component = event.data.list;
                         comp.user_selectable = event.source.value;
