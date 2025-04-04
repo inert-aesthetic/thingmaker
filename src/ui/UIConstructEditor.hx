@@ -352,9 +352,11 @@ class UIConstructEditor extends Canvas{
 			}
 			else if (candidates.length==0) {
 				var new_selection = 
-					c.getChildrenRecursive(true)
+					visibleEntities
 					.filter(
 						t->
+							!project.isLocked(t)
+							&&
 							t.isTangible()
 							&&
 							t.asTangible()
@@ -549,7 +551,7 @@ class UIConstructEditor extends Canvas{
 				}
 			}
 		} else {
-			var targets = getChildrenRecursive(construct, true, true, true).filter(t->!project.isLocked(t));
+			var targets = getChildrenRecursive(construct, true, true, true);
 			// var oldcandidates=candidates;
 			candidates = targets.filter(
 					t->t.isTangible()&&t.asTangible().containsPoint(mouse, getMagicValue(t, RADIUS, Consts.NODE_SELECT_RADIUS))
@@ -1242,7 +1244,7 @@ class UIConstructEditor extends Canvas{
 			}
         }
 
-		var highlights:Array<Entity>;
+		var highlights:Array<Entity> = null;
         if (selected.length == 0 && mouse_is_down && mouse_dragged && (mode != REGION  || region_drag_point == NONE)) {
 			g.strokeStyle(Nord.green, 1, 0.8);
 			g.fillStyle(Nord.green, 0.3);
@@ -1252,7 +1254,7 @@ class UIConstructEditor extends Canvas{
 			g.rectangle(ms_tl.x, ms_tl.y, ms_w, ms_h);
             g.fillStyle(null);
 
-            highlights = visibleEntities.filter(e->e.isTangible()&&e.asTangible().containedByRect(mouse_square_top_left, mouse_square_width, mouse_square_height));
+            highlights = visibleEntities.filter(e->!project.isLocked(e)&&e.isTangible()&&e.asTangible().containedByRect(mouse_square_top_left, mouse_square_width, mouse_square_height));
 		}
 		else{
 			highlights = candidates.length==0?[]:[candidates[0]];
@@ -1285,13 +1287,13 @@ class UIConstructEditor extends Canvas{
 				case NOT_CORE,POSITION,TIMELINE_CONTROL:
 			}
 		}
-		// //draw origin widget
-		// var cr = toCameraSpace(c.origin.copy());
-		// g.strokeStyle(Nord.yellow, 1, 0.8);
-		// g.moveTo(cr.x-5, cr.y-5);
-		// g.lineTo(cr.x+5, cr.y+5);
-		// g.moveTo(cr.x+5, cr.y-5);
-		// g.lineTo(cr.x-5, cr.y+5);
+		//draw origin widget
+		var cr = toCameraSpace(Vect.Zero.copy());
+		g.strokeStyle(Nord.yellow, 1, 0.8);
+		g.moveTo(cr.x-5, cr.y-5);
+		g.lineTo(cr.x+5, cr.y+5);
+		g.moveTo(cr.x+5, cr.y-5);
+		g.lineTo(cr.x-5, cr.y+5);
 
 		// //temp draw groups
 		// for(c in construct.groups){
